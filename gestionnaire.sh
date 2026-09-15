@@ -4,21 +4,33 @@
 ## gddd, le Gestionnaire de Déploiement de Défis Dynamiques ##
 ##############################################################
 
-# Ajustez les variables suivantes:
-DEFI="uefi_chall_v2" # nom du conteneur docker tel que préalablement construit avec docker build
-BEAU_NOM="Le Portique de l'Antre de Tux" # nom du défi tel qu'affiché aux participants
-NBRE_EQUIPES=12 # Nombre d'équipes présentes au ctf
 PASSWD_FILE="./passwd.txt" # fichier contenant les mots de passes de chaque équipe
-
-###############################
-## NE PAS MODIFIER LA SUITE! ##
-###############################
-
-VERSION=C0.3 # version de gddd
+FICHIER_DEFIS="./defis.txt" # fichier contenant les informations des défis
+VERSION=C0.4 # version de gddd
 SIMULTANEITE=0 # simultanéité permise par cette version (autre que pour les différentes équipes)
 
 
+. $FICHIER_DEFIS
+echo -e "Bienvenue au $NOM_CTF!\n"
+echo "Voici la liste des défis offert via GDDD:"
+for ((i=0; i<$NBRE_DEFIS; i++))
+do
+	echo "$i - ${NOMS_DEFIS[$i]}"
+done
+
+echo -e -n "\nEntre le numéro du défi que tu souhaites essayer: "
+read defi
+if [ -z "$defi" ] || ! [[ "$defi" =~ ^([1-9][0-9]*|0)$ ]] || [ $defi -ge $NBRE_DEFIS ]
+then
+	echo "numéro invalide!"
+	exit
+fi
+
+DEFI=${ID_DEFIS[$defi]} # nom du conteneur docker tel que préalablement construit avec docker build
+BEAU_NOM=${NOMS_DEFIS[$defi]} # nom du défi tel qu'affiché aux participants
+
 echo -e "Bienvenue au défi $BEAU_NOM.\n"
+. $PASSWD_FILE
 
 echo "S'il vous plaît entrez votre numéro d'équipe:"
 read num
@@ -57,7 +69,6 @@ then
 fi
 
 # Lecture des mots de passe:
-. $PASSWD_FILE
 if [ -z "$PASSWD" ]
 # Le fichier est mal formatté
 then

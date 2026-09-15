@@ -19,7 +19,9 @@ Pour être déployé par GDDD, un défi doit respecter les contraintes suivantes
 - Il n'est pas souhaitable d'utiliser GDDD pour des défis que le participant peut télécharger lui-même ou pour des défis web
 
 Il faut également s'assurer de donner un numéro (entier supérieur à 0) et un mot de passe à chaque équipe.
-Ces données doivent être entrées dans le fichier `passwd.txt`.
+Ces données, ainsi que le nombre d'équipess participantes, doivent être entrées dans le fichier `passwd.txt`.
+
+Le fichier `defis.txt` doit aussi être rempli avec le nom du CTF, le nombre de défis ainsi que le nom du conteneur docker et le nom d'affichage de chaque défi.
 
 ## Versions
 
@@ -41,10 +43,8 @@ Ce compte doit être modifié de manière à ce que sa shell par défaut soit GD
 
 Un compte administrateur doit aussi être créé, mais l'accès à ce compte par ssh n'est pas nécessaire (ni recommandé). Pour s'y connecter à distance, les administrateurs peuvent utiliser la porte dérobée de GDDD (ou la condamner).
 
-Les participants devront se connecter par ssh au compte de l'usager générique, ce qui démarrera une instance de GDDD, à laquelle ils devront se connecter via leur numéro et leur mot de passe d'équipe.
+Les participants devront se connecter par ssh au compte de l'usager générique, ce qui démarrera une instance de GDDD, à laquelle ils devront se connecter via leur numéro et leur mot de passe d'équipe, après avoir choisi à quel défi ils souhaitent s'attaquer.
 
 ### Limites actuelles (appelées à changer)
-
-Pour l'instant, GDDD ne supporte qu'un seul défi par instance, ce qui signifie qu'il faudrait créer 1 usager ou démon sshd par défi et entrer les informations du défi dans le code de GDDD. Ces limites sont appelées à disparaître très bientôt.
 
 Pour l'instant, GDDD permet à chaque équipe d'exécuter une instance de chaque défi à la fois seulement, dans le but (entre autres) de réduire les ressources utilisées. Cette limite sera probablement configurable dans le futur.

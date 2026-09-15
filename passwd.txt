@@ -1,6 +1,13 @@
-# Mots de passe des équipes du CTF
+# PARAMÈTRES DE GDDD
+# Modifiez ces paramètres pour chaque CTF
 
-# Attention: Il faut définir un array bash de taille nombre_équipes+1 et l'index 0 est inutilisé.
 
-PASSWD=('ADMIN' '1' '2' '3' '4' '5' '' '' '' '' '' '' '')
-# 12 équipes
+NBRE_EQUIPES=12 # Nombre d'équipes présentes au ctf
+
+PASSWD=('ADMIN' '1' '2' '3' '4' '5' '' '' '' '' '' '' '') # Mot de passe de chaque équipe participant au CTF
+
+# PASSWD est un array Bash qui contient le mot de passe de chaque équipe.
+# Le numéro d'équipe (un entier supérieur à 1) correspond à l'indice dans l'array.
+# Ainsi, PASSWD[3] est le mot de passe de l'équipe 3.
+# La position 0 est inutilisée. Sa valeur sera ignorée.
+# Les mots de passe doivent être des strings, sans autre restriction, mais usez de votre bon sens.

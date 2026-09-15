@@ -1,0 +1,13 @@
+# PARAMÈTRES DE GDDD
+# Modifiez ces paramètres pour chaque CTF
+
+NOM_CTF="UCTF 2026" # Nom du CTF, tel qu'affiché par GDDD au démarrage
+
+NBRE_DEFIS=3 # Nombre de défis offerts via GDDD pour ce CTF
+
+ID_DEFIS=('uefi_chall_v2' 'defi_2' 'defi_3') # Noms du conteneur docker de chaque défi offert par GDDD pour ce CTF
+NOMS_DEFIS=("Le portique de l'Antre de Tux" "2e défi" "3e défi") # Beau nom (tel qu'affiché) de chaque défi offert par GDDD pour ce CTF
+
+# ID_DEFIS et NOMS_DEFIS sont 2 arrays Bash qui doivent compter autant d'entrées l'un que l'autre.
+# Ce nombre d'entrées doit être égal à NBRE_DEFIS.
+# Chaque position correspond à un défi, c'est-à-dire que ID_DEFIS[0] est le nom du conteneur du défi dont le nom d'affichage est NOMS_DEFIS[0], par exemple.
