@@ -19,9 +19,9 @@ Pour être déployé par GDDD, un défi doit respecter les contraintes suivantes
 - Il n'est pas souhaitable d'utiliser GDDD pour des défis que le participant peut télécharger lui-même ou pour des défis web
 
 Il faut également s'assurer de donner un numéro (entier supérieur à 0) et un mot de passe à chaque équipe.
-Ces données, ainsi que le nombre d'équipess participantes, doivent être entrées dans le fichier `passwd.txt`.
+Ces données, ainsi que le nombre d'équipess participantes, doivent être entrées dans le fichier `gddd/passwd.txt`.
 
-Le fichier `defis.txt` doit aussi être rempli avec le nom du CTF, le nombre de défis ainsi que le nom du conteneur docker et le nom d'affichage de chaque défi.
+Le fichier `gddd/defis.txt` doit aussi être rempli avec le nom du CTF, le nombre de défis ainsi que le nom du conteneur docker et le nom d'affichage de chaque défi.
 
 ## Versions
 
@@ -36,15 +36,40 @@ Chaque version est complétement indépendante l'une de l'autre et fonctionne di
 
 ## Fonctionnement de cette version (C)
 
-Le serveur doit ouvrir son port ssh et permettre aux participants de s'y connecter. Il faut évidemment s'assurer d'avoir Linux-PAM d'installé, activé et lié à sshd (utiliser seulement shadow serait quand même risqué).
+Cette version fonctionne dans un conteneur docker. On doit d'abord le construire avec `./demarrer.sh -b`, puis on peut le supprimer avec `./stopper.sh -f`.
 
-Un compte usager générique (sans privilège d'administrateur, mais avec les privilèges nécessaires pour démarrer un contenur docker) doit être créé et accessible par ssh.
-Ce compte doit être modifié de manière à ce que sa shell par défaut soit GDDD (au lieu de bash, dash, sh, etc.). Cela peut se faire via les paramètres de sshd et/ou via le .profile de l'usager.
+Ce conteneur docker contient 2 utilisateurs, root et uctf.
+L'usager uctf a GDDD comme shell par défaut, ce qui signifie que le programme s'ouvre tout de suite après le login et que les participants n'ont pas accès à aucun autre programme dans le docker.
 
-Un compte administrateur doit aussi être créé, mais l'accès à ce compte par ssh n'est pas nécessaire (ni recommandé). Pour s'y connecter à distance, les administrateurs peuvent utiliser la porte dérobée de GDDD (ou la condamner).
+Également, le socket de docker est "bridgé" avec la machine hôte, ce qui signifie que GDDD, depuis l'intérieur de son conteneur, a accès à toutes les images docker de la machine hôte. (svp ne pas vous en servir pour nester des instances...)
 
-Les participants devront se connecter par ssh au compte de l'usager générique, ce qui démarrera une instance de GDDD, à laquelle ils devront se connecter via leur numéro et leur mot de passe d'équipe, après avoir choisi à quel défi ils souhaitent s'attaquer.
+Un démon sshd roule en permanence dans le docker de GDDD: C'est le moyen autant pour les participants que pour les administrateurs de se connecter à GDDD.
+Vous pouvez choisir quel port de la machine hôte utiliser avec `./demarrer.sh -p NUMÉRO_PORT`.
+Le port par défaut est 2208.
+
+Les administrateurs peuvent se connecter directement au compte root du docker en utilisant la porte dérobée dans GDDD.
+Ceci est très utile pour déboguer GDDD, mais ne devrait pas servir pour autre chose, puisque les images docker des défis doivent être créés sur la machine hôte.
+On pourrait toutefois décider d'utiliser cette porte dérobée pour faire un hotfix ou pour ajouter des défis sans redémarrer le docker.
+
+Il est important de mentionner clairement que chaque équipe ne peut exécuter chaque défi qu'une instance à la fois.
+
+### Guide pour les participants
+
+1. Ouvrez votre terminal sur votre machine linux
+2. Tapez `ssh uctf@ADDRESSE_IP` puis Enter
+3. Entrez le mot de passe `2026` puis Enter (rien ne s'affichera, c'est normal)
+4. Choisissez un défi parmis ceux disponibles
+5. Entrez votre numéro d'équipe
+6. Entrez votre mot de passe d'équipe
+7. Résolvez le défi!
+8. Vous serez déconnecté une fois le défi réussi ou échoué
 
 ### Limites actuelles (appelées à changer)
 
 Pour l'instant, GDDD permet à chaque équipe d'exécuter une instance de chaque défi à la fois seulement, dans le but (entre autres) de réduire les ressources utilisées. Cette limite sera probablement configurable dans le futur.
+
+Dans le futur, il se pourrait que GDDD lise directement ses informations dans les fichiers yaml de notre déploiement de CTFd.
+
+### Autres notes
+
+Il se peut qu'il faille `chmod 700 /var/run/docker.sock` pour que gddd soit capable de démarrer les défis.
