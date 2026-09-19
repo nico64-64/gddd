@@ -19,9 +19,10 @@ Pour être déployé par GDDD, un défi doit respecter les contraintes suivantes
 - Il n'est pas souhaitable d'utiliser GDDD pour des défis que le participant peut télécharger lui-même ou pour des défis web
 
 Il faut également s'assurer de donner un numéro (entier supérieur à 0) et un mot de passe à chaque équipe.
-Ces données, ainsi que le nombre d'équipess participantes, doivent être entrées dans le fichier `gddd/passwd.txt`.
+Ces données, ainsi que le nombre d'équipess participantes, peuvent être entrées dans le fichier `gddd/passwd` ou lues directement dans le fichier JSON qui définit les comptes utilisateurs et les équipes pour CTFd dans le cadre de l'UCTF.
 
-Le fichier `gddd/defis.txt` doit aussi être rempli avec le nom du CTF, le nombre de défis ainsi que le nom du conteneur docker et le nom d'affichage de chaque défi.
+Le fichier `gddd/defis` doit aussi être rempli avec le nom du CTF, le nombre de défis ainsi que le nom du conteneur docker et le nom d'affichage de chaque défi.
+Il peut toutefois être rempli automatiquement par le script `reload_defis.sh`, qui lit les fichiers yaml de description des défis exigés par l'UCTF.
 
 ## Versions
 
@@ -36,7 +37,7 @@ Chaque version est complétement indépendante l'une de l'autre et fonctionne di
 
 ## Fonctionnement de cette version (C)
 
-Cette version fonctionne dans un conteneur docker. On doit d'abord le construire avec `./demarrer.sh -b`, puis on peut le supprimer avec `./stopper.sh -f`.
+Cette version fonctionne dans un conteneur docker. On doit d'abord le construire avec `./demarrer.sh -b`, puis on peut le supprimer complètement avec `./stopper.sh -f`.
 
 Ce conteneur docker contient 2 utilisateurs, root et uctf.
 L'usager uctf a GDDD comme shell par défaut, ce qui signifie que le programme s'ouvre tout de suite après le login et que les participants n'ont pas accès à aucun autre programme dans le docker.
@@ -55,9 +56,9 @@ Il est important de mentionner clairement que chaque équipe ne peut exécuter c
 
 ### Guide pour les participants
 
-1. Ouvrez votre terminal sur votre machine linux
+1. Ouvrez un terminal sur votre machine Linux
 2. Tapez `ssh uctf@ADDRESSE_IP` puis Enter
-3. Entrez le mot de passe `2026` puis Enter (rien ne s'affichera, c'est normal)
+3. Entrez le mot de passe (`2026`) puis Enter (rien ne s'affichera, c'est normal)
 4. Choisissez un défi parmis ceux disponibles
 5. Entrez votre numéro d'équipe
 6. Entrez votre mot de passe d'équipe
@@ -68,8 +69,24 @@ Il est important de mentionner clairement que chaque équipe ne peut exécuter c
 
 Pour l'instant, GDDD permet à chaque équipe d'exécuter une instance de chaque défi à la fois seulement, dans le but (entre autres) de réduire les ressources utilisées. Cette limite sera probablement configurable dans le futur.
 
-Dans le futur, il se pourrait que GDDD lise directement ses informations dans les fichiers yaml de notre déploiement de CTFd.
+### Dépendances
+
+Cette version de GDDD utilise les programmes suivants:
+
+Sur la machine hôte et dans le conteneur docker:
+- **bash** (aucune autre shell ne fonctionnera, sauf zsh en mode d'émulation bash)
+- **docker** (dans le conteneur et sur la machine hôte) et dockerd (sur la machine hôte) (pas docker compose)
+
+Sur la machine hôte seulement:
+- **yq** (pour lire les descriptions yaml seulement)
+
+Dans le conteneur docker (base ubuntu 24.04):
+- **sshd** (openssh-server)
+- **curl** (pour télécharger docker; utilisé au build seulement)
+- **jq** (pour lire le json des comptes utilisateurs seulement)
+
+GDDD ne fonctionne pas nativement sur Windows et n'est supporté que sur Linux.
 
 ### Autres notes
 
-Il se peut qu'il faille `chmod 700 /var/run/docker.sock` pour que gddd soit capable de démarrer les défis.
+Il se peut qu'il faille `chmod 700 /var/run/docker.sock` dans le conteneur pour que gddd soit capable de démarrer les défis.

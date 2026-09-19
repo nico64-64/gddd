@@ -3,7 +3,8 @@
 if [[ $1 == '-h' ]] || [[ $1 == '--help' ]]
 then
 	echo "Script de fermeture et nettoyage de GDDD"
-	echo -e "Usage: $0 [ -f ]\n"
+	echo -e "Usage: $0 [ -h ] [ -f ]\n"
+	echo "-h affiche ce message, puis quitte"
 	echo "-f indique qu'il faut aussi supprimer l'image docker de GDDD"
 	echo -e "\nPour construire et démarrer GDDD, utilisez demarrer.sh."
 	exit

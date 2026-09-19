@@ -4,29 +4,111 @@
 ## gddd, le Gestionnaire de Déploiement de Défis Dynamiques ##
 ##############################################################
 
+
+# Valeurs par défaut (modifiables via les options d'invocation)
+UTILISER_CONFIGS_UCTF=1 # indique qu'on veut utiliser les fichiers de configuration json et yaml de l'uctf (commenter pour revenir aux arrays Bash de GDDD)
+JSON_EQUIPES="/gddd/comptes_utilisateurs.json" # fichier contenant les mots de passes de chaque équipe
 FICHIER_MDP="/gddd/passwd" # fichier contenant les mots de passes de chaque équipe
 FICHIER_DEFIS="/gddd/defis" # fichier contenant les informations des défis
-VERSION="C1.0" # version de gddd
+
+# Valeurs fixes (non modifiables)
+VERSION="C1.1" # version de gddd
 SIMULTANEITE=0 # simultanéité permise par cette version (autre que pour les différentes équipes)
+
+
+# Lecture des arguments reçus par le programme
+for arg in "$@"
+do
+	case "$arg"
+	in
+		--help | -h)
+			echo -e "\e[1mGDDD, le Gestionnaire de Déploiement de Défis Dynamiques\e[0m\n"
+			echo -e "Usage: $0 [ -h | -v ] [ -d FICHIER_DEFIS ] [ -m FICHIER_MDP | -j JSON_EQUIPES ]\n"
+			echo "-h Affiche ce message, puis quitte"
+			echo "-v Affiche les informations de version de GDDD, puis quitte"
+			echo "-d Indique que le prochain argument sera le nom du fichier listant les informations"
+			echo "     des défis, sous forme d'array Bash"
+			echo "   Ce fichier peut être généré par reload_defis.sh à partir des descriptions yaml"
+			echo "     des défis, tels que présentes à l'UCTF"
+			echo "-m Indique que le prochain argument sera le nom du fichier listant les mots de passes"
+			echo "     des équipes, sous forme d'array Bash"
+			echo "-j Indique que le prochain argument sera le nom du fichier json de configuration des"
+			echo "     équipes, tel qu'utilisé par CTFd dans le cadre de l'UCTF"
+			echo -e "   Notez que cette option et la précédente sont mutuellement exclusives.\n"
+			exit
+			;;
+		
+		--version | -v)
+			echo "GDDD version $VERSION"
+			echo "Cette version supporte les configs de l'UCTF!"
+			echo "Consultez https://github.com/nico64-64/gddd pour en savoir plus."
+			exit
+			;;
+		
+		-d)
+			aLire=FICHIER_DEFIS
+			;;
+		
+		-m)
+			unset UTILISER_CONFIGS_UCTF
+			aLire=FICHIER_MDP
+			;;
+		
+		-j)
+			UTILISER_CONFIGS_UCTF=1
+			aLire=JSON_EQUIPES
+			;;
+		
+		*)
+			if [[ -v aLire ]]
+			then
+				declare "$aLire=$arg"
+				unset aLire
+			else
+				echo "Erreur: $arg n'est pas une option acceptée par ce programme."
+				echo "Entrez $0 -h pour consulter la liste des options acceptées."
+				exit
+			fi
+			;;
+	esac
+done
+
+
+if [[ -v UTILISER_CONFIGS_UCTF ]]
+# Lecture des informations de configuration depuis les fichiers JSON de l'UCTF
+then
+	if ! [ -f "$JSON_EQUIPES" ]
+	then
+		echo "ERREUR: Fichier JSON de définition des équipes manquant!"
+		echo "Avertissez un admin!"
+		exit
+	fi
+	
+	readarray -t PASSWD < <(jq -r '.equipes_ctfd[].mdp' $JSON_EQUIPES) # lecture des mots de passes des équipes depuis le fichier JSON
+	PASSWD=("ADMIN" "${PASSWD[@]}") # décale toutes les entrées pour qu'elles commencent à 1, rejoignant le comportement des arrays Bash de GDDD
+
+else
+# Lecture des informations de configuration depuis les arrays Bash de GDDD
+	if ! [ -f $FICHIER_MDP ]
+	# le fichier de mots de passe n'existe pas
+	then
+		echo "ERREUR: Fichier de mots de passes manquant!"
+		echo "Avertissez un Admin!"
+		exit
+	fi
+	. $FICHIER_MDP # Lecture des informations des équipes
+fi
 
 
 if ! [ -f $FICHIER_DEFIS ]
 # le fichier de définition des défis n'existe pas
 then
-	echo "ERREUR: Fichier de définition des défis manquants!"
-	echo "Avertissez un Admin!"
-	exit
-elif ! [ -f $FICHIER_MDP ]
-# le fichier de mots de passe n'existe pas
-then
-	echo "ERREUR: Fichier de mots de passes manquants!"
+	echo "ERREUR: Fichier de définition des défis manquant!"
 	echo "Avertissez un Admin!"
 	exit
 fi
+. $FICHIER_DEFIS # Lecture des informations des défis
 
-# Lecture des paramètres
-. $FICHIER_DEFIS
-. $FICHIER_MDP
 
 if [ -z "$PASSWD" ]
 # le fichier de mots de passe est mal formatté
@@ -34,13 +116,16 @@ then
 	echo "ERREUR: Fichier de mots de passe mal formatté."
 	echo "Avertissez un Admin!"
 	exit
-elif [ -z "$ID_DEFIS" ] || [ -z "$NOMS_DEFIS" ]
+elif [ -z "$ID_DEFIS" ] || [ -z "$NOMS_DEFIS" ] || [ ${#ID_DEFIS[@]} -ne ${#NOMS_DEFIS[@]} ]
 # le fichier de définition des défis est mal formatté
 then
 	echo "ERREUR: Fichier de définition des défis mal formatté."
 	echo "Avertissez un Admin!"
 	exit
 fi
+
+NBRE_DEFIS=${#ID_DEFIS[@]}
+((NBRE_EQUIPES=${#PASSWD[@]}-1))
 
 
 # Mot de bienvenue et affichage de la liste des défis

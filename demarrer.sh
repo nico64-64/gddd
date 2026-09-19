@@ -3,7 +3,8 @@
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]
 then
 	echo "Script de construction et de démarrage de GDDD"
-	echo -e "Usage: $0 [ -b ] [ -p port ]\n"
+	echo -e "Usage: $0 [ -h ] [ -b ] [ -p port ]\n"
+	echo "-h affiche ce message, puis quitte"
 	echo "-b indique qu'il faut construire l'image docker de GDDD"
 	echo "-p indique que le prochain argument est le port à mapper au port ssh du conteneur"
 	echo -e "\nUtilisez stopper.sh pour fermer GDDD."

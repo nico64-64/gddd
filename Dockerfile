@@ -4,7 +4,7 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update
-RUN apt-get install --fix-missing -y openssh-server curl
+RUN apt-get install --fix-missing -y openssh-server curl jq
 RUN mkdir /var/run/sshd
 RUN curl -fsSL https://get.docker.com | sh
 

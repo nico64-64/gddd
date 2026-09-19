@@ -3,8 +3,6 @@
 
 NOM_CTF="UCTF 2026" # Nom du CTF, tel qu'affiché par GDDD au démarrage
 
-NBRE_DEFIS=3 # Nombre de défis offerts via GDDD pour ce CTF
-
 ID_DEFIS=('uefi_chall_v2' 'defi_2' 'defi_3') # Noms du conteneur docker de chaque défi offert par GDDD pour ce CTF
 NOMS_DEFIS=("Le portique de l'Antre de Tux" "2e défi" "3e défi") # Beau nom (tel qu'affiché) de chaque défi offert par GDDD pour ce CTF
 
