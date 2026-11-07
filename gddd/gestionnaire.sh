@@ -12,7 +12,7 @@ FICHIER_MDP="/gddd/passwd" # fichier contenant les mots de passes de chaque équ
 FICHIER_DEFIS="/gddd/defis" # fichier contenant les informations des défis
 
 # Valeurs fixes (non modifiables)
-VERSION="C1.1" # version de gddd
+VERSION="C1.2" # version de gddd
 SIMULTANEITE=0 # simultanéité permise par cette version (autre que pour les différentes équipes)
 
 
@@ -159,17 +159,20 @@ then
 	echo "Numéro d'équipe invalide!"
 	echo "Vous devez entrer le numéro d'équipe écrit sur votre table."
 	exit
-elif [ $num -eq 0 ]
+#elif [ $num -eq 0 ]
 # login admin (camouflé)
-then
-	echo "Error: not found."
-	echo "Press Enter to exit."
-	read input
-	if [ -n "$input" ] && [ "$input" = "adm" ]
-	then
-		su
-	fi
-	exit
+# ATTENTION:
+# Cette porte dérobée n'est plus supportée et sera complètement supprimée dans la prochine version (C1.3).
+# Il est toujours possible de la décommenter pour la réactiver, mais il est préférable d'utiliser docker exec.
+#then
+#	echo "Error: not found."
+#	echo "Press Enter to exit."
+#	read input
+#	if [ -n "$input" ] && [ "$input" = "adm" ]
+#	then
+#		su
+#	fi
+#	exit
 elif [ $num -lt 0 ] || [ $num -gt $NBRE_EQUIPES ]
 # $num > $NBRE_EQUIPES ou négatif
 then

@@ -6,6 +6,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
 RUN apt-get install --fix-missing -y openssh-server curl jq
 RUN mkdir /var/run/sshd
+RUN echo "\nAllowTcpForwarding no\nX11Forwarding no\nAllowAgentForwarding no\nPermitTunnel no\nSubsystem sftp internal-sftp-disabled" >> /etc/ssh/sshd_config
+RUN rm /usr/lib/openssh/sftp-server
 RUN curl -fsSL https://get.docker.com | sh
 
 COPY gddd /gddd

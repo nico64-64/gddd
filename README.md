@@ -46,11 +46,12 @@ L'usager uctf a GDDD comme shell par défaut, ce qui signifie que le programme s
 
 Un démon sshd roule en permanence dans le docker de GDDD: C'est le moyen autant pour les participants que pour les administrateurs de se connecter à GDDD.
 Vous pouvez choisir quel port de la machine hôte utiliser avec `./demarrer.sh -p NUMÉRO_PORT`.
-Le port par défaut est 2208.
+Le port par défaut est 2200.
 
-Les administrateurs peuvent se connecter directement au compte root du docker en utilisant la porte dérobée dans GDDD.
+Les administrateurs peuvent se connecter directement au compte root du docker en exécutant `docker exec -it gddd bash`.
 Ceci est très utile pour déboguer GDDD, mais ne devrait pas servir pour autre chose, puisque les images docker des défis doivent être créés sur la machine hôte.
-On pourrait toutefois décider d'utiliser cette porte dérobée pour faire un hotfix ou pour ajouter des défis sans redémarrer le docker.
+On pourrait toutefois s'en servir pour faire un hotfix ou pour ajouter des défis sans redémarrer le docker.
+L'ancienne porte dérobée n'est plus supportée et a été supprimée dans la version C1.2.
 
 Il est important de mentionner clairement que chaque équipe ne peut exécuter chaque défi qu'une instance à la fois.
 

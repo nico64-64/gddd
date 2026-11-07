@@ -31,7 +31,7 @@ then
 fi
 if [[ -z "$port" ]]
 then
-	port=2208
+	port=2200
 fi
 
 echo "Démarrage du conteneur docker..."
