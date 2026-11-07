@@ -101,7 +101,7 @@ for categorie in "$categories"
 do
 	for defi in "$categorie"/*
 	do
-		if [ -f "$defi/description.yaml" ] && [[ "$(yq '.deploiement' "$defi/description.yaml")" == "\"gddd\"" ]]
+		if [ -f "$defi/description.yaml" ] && [[ "$(yq '.type' "$defi/description.yaml")" == "\"gddd\"" ]]
 		then
 			if [[ ! -v id_defis ]] && [ -d "$defi" ]
 			then
