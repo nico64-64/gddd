@@ -224,8 +224,8 @@
 			timer.innerHTML = "Dernière mise à jour il y a " + Math.floor((Date.now() - dernier_reload) / 60000) + " minute(s) " + Math.floor(((Date.now() - dernier_reload) % 60000) / 1000) + " secondes";
 			if (Date.now() - dernier_reload > 300000)
 			{
-				window.location.href = "/dashboard.php?reload=1";
 				clearInterval(intervalId);
+				window.location.href = "/dashboard.php?reload=1";
 			}
 		}
 		
