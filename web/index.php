@@ -2,7 +2,7 @@
 	session_start();
 	
 	$lien_ctfd = "https://ctfd.uctf.ctf";
-	$nom_ctf = "&lt;/UCTF26&gt;";
+	$nom_ctf = "&lt;/UCTF 2026&gt;";
 	
 	if (isset($_SESSION['equipe']))
 	{

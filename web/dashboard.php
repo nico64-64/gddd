@@ -58,9 +58,8 @@
 		//Un participant normal a réussi à se connecter
 		{$_SESSION['equipe'] = $equipes[$_POST['num']]['nom'];}
 	}
-	//var_dump($equipes);
 	
-	if (isset($_GET['reload']) || time() - $_SESSION['dernier_reload'] > 300)
+	if (!isset($_SESSION['dernier_reload']) || isset($_GET['reload']) || time() - $_SESSION['dernier_reload'] > 300)
 	{
 		$_SESSION['defis'] = charger_defis();
 		$_SESSION['dernier_reload'] = time();
@@ -229,7 +228,7 @@
 			}
 		}
 		
-		const intervalID = setInterval(verifierReload, 1000);
+		const intervalId = setInterval(verifierReload, 1000);
 		verifierReload();
 	</script>
 </body>
