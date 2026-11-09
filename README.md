@@ -1,4 +1,4 @@
-# GDDD, le Gestionnaire de Déploiement de Défis Dynamiques, version C
+# GDDD, le Gestionnaire de Déploiement de Défis Dynamiques, version D
 
 `/!\ Ce projet est encore en cours de développement! Des changements majeurs pourraient arriver à tout moment. /!\`
 
@@ -35,36 +35,13 @@ Chaque version est complétement indépendante l'une de l'autre et fonctionne di
 - Version C: Gestionnaire ssh (fonctionnel)
 - Version D: Gestionnaire http (en cours de développement)
 
-## Fonctionnement de cette version (C)
+## Fonctionnement de cette version (D)
 
-Cette version fonctionne dans un conteneur docker. On doit d'abord le construire avec `./demarrer.sh -b`, puis on peut le supprimer complètement avec `./stopper.sh -f`.
-
-Ce conteneur docker contient 2 utilisateurs, root et uctf.
-L'usager uctf a GDDD comme shell par défaut, ce qui signifie que le programme s'ouvre tout de suite après le login et que les participants n'ont pas accès à aucun autre programme dans le docker.
-
-Également, le socket de docker est "bridgé" avec la machine hôte, ce qui signifie que GDDD, depuis l'intérieur de son conteneur, a accès à toutes les images docker de la machine hôte. (svp ne pas vous en servir pour nester des instances...)
-
-Un démon sshd roule en permanence dans le docker de GDDD: C'est le moyen autant pour les participants que pour les administrateurs de se connecter à GDDD.
-Vous pouvez choisir quel port de la machine hôte utiliser avec `./demarrer.sh -p NUMÉRO_PORT`.
-Le port par défaut est 2200.
-
-Les administrateurs peuvent se connecter directement au compte root du docker en exécutant `docker exec -it gddd bash`.
-Ceci est très utile pour déboguer GDDD, mais ne devrait pas servir pour autre chose, puisque les images docker des défis doivent être créés sur la machine hôte.
-On pourrait toutefois s'en servir pour faire un hotfix ou pour ajouter des défis sans redémarrer le docker.
-L'ancienne porte dérobée n'est plus supportée et a été supprimée dans la version C1.2.
-
-Il est important de mentionner clairement que chaque équipe ne peut exécuter chaque défi qu'une instance à la fois.
+À VENIR!
 
 ### Guide pour les participants
 
-1. Ouvrez un terminal sur votre machine Linux
-2. Tapez `ssh uctf@ADDRESSE_IP` puis Enter
-3. Entrez le mot de passe (`2026`) puis Enter (rien ne s'affichera, c'est normal)
-4. Choisissez un défi parmis ceux disponibles
-5. Entrez votre numéro d'équipe
-6. Entrez votre mot de passe d'équipe
-7. Résolvez le défi!
-8. Vous serez déconnecté une fois le défi réussi ou échoué
+À VENIR!
 
 ### Limites actuelles (appelées à changer)
 
@@ -74,20 +51,6 @@ Pour l'instant, GDDD permet à chaque équipe d'exécuter une instance de chaque
 
 Cette version de GDDD utilise les programmes suivants:
 
-Sur la machine hôte et dans le conteneur docker:
-- **bash** (aucune autre shell ne fonctionnera, sauf zsh en mode d'émulation bash)
-- **docker** (dans le conteneur et sur la machine hôte) et dockerd (sur la machine hôte) (pas docker compose)
-
-Sur la machine hôte seulement:
-- **yq** (pour lire les descriptions yaml seulement)
-
-Dans le conteneur docker (base ubuntu 24.04):
-- **sshd** (openssh-server)
-- **curl** (pour télécharger docker; utilisé au build seulement)
-- **jq** (pour lire le json des comptes utilisateurs seulement)
+À VENIR!
 
 GDDD ne fonctionne pas nativement sur Windows et n'est supporté que sur Linux.
-
-### Autres notes
-
-Il se peut qu'il faille `chmod 700 /var/run/docker.sock` dans le conteneur pour que gddd soit capable de démarrer les défis.
