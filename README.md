@@ -37,11 +37,35 @@ Chaque version est complétement indépendante l'une de l'autre et fonctionne di
 
 ## Fonctionnement de cette version (D)
 
-À VENIR!
+Cette version utilise un serveur HTTP et un serveur PHP pour présenter une interface HTML conviviale aux usager.
+
+DOCUMENTATION À VENIR! (d'ici la semaine des 4 jeudis...)
+
+### Guide de déploiement
+
+#### Pour tester et développer
+
+Le développement se fait majoritairement avec le serveur http fourni avec PHP.
+
+Entrez `php -S 127.0.0.1:8000` pour le démarrer en local sur le port 8000 de votre machine. Vous devez exécuter cette commande à la racine du site web, donc dans le dossier /web.
+
+Le tout est ensuite vérifié avec le déploiement docker une fois stable.
+
+#### Déploiement docker
+
+On peut aussi déployer GDDD version D par docker, mais cela n'est pas idéal, puisque cela rend le partage des fichiers avec CTFd plus complexe.
+
+Cela permet toutefois d'avoir un déploiement rapide et préconfiguré avec un serveur plus stable et robuste que le serveur de développement de PHP. Ce docker utilise nginx avec php-fpm, tous deux à leur dernière version.
+
+Il se peut que ce déploiement ne fonctionne pas avec la toute dernière version. Les patchs sont les bienvenues.
 
 ### Guide pour les participants
 
-À VENIR!
+1. Ouvrez votre navigateur web et rendez-vous à l'adresse `http://ADRESSE_IP:8000`.
+2. Choisissez votre équipe et entrez votre mot de passe.
+3. La liste des défis déployés par GDDD apparaissent devant vous.
+4. Choisissez un défi et cliquez sur "Démarrer". Vous ne pouvez avoir qu'une seule instance par équipe.
+5. Votre tableau de bord est rafraichi à toutes les 5 minutes. Pensez à le rafraichir manuellement avant de démarrer un défi.
 
 ### Limites actuelles (appelées à changer)
 
