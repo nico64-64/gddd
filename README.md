@@ -75,6 +75,11 @@ Pour l'instant, GDDD permet à chaque équipe d'exécuter une instance de chaque
 
 Cette version de GDDD utilise les programmes suivants:
 
-À VENIR!
+- un serveur http (php -S ou nginx)
+- un serveur php (php ou php-fpm)
+- yq et jq
+- bash
+- sed
+- docker (pour le déploiement docker)
 
 GDDD ne fonctionne pas nativement sur Windows et n'est supporté que sur Linux.

@@ -50,6 +50,9 @@ h4
 pre
 {
 	text-align: left;
+	white-space: pre-wrap;
+	word-break: break-word;
+	overflow-x: scroll;
 }
 
 a.bouton
@@ -63,9 +66,26 @@ a.bouton
 	font-weight: bold;
 	border-radius: 10px;
 	user-select: none;
+	cursor: pointer;
 }
 
 p
 {
 	margin: 5px 0px;
+}
+
+.loading
+{
+	width: 25px;
+	height: 25px;
+	border: 8px solid lightblue; /* anneau */
+	border-top: 8px solid #3498db; /* arc qui tourne */
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin
+{
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
 }
