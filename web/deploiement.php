@@ -1,6 +1,16 @@
 <?php
 	session_start();
 	
+	//Charger les variables d'environnements
+	$env = file_get_contents("/.env");
+	$lines = explode("\n",$env);
+
+	foreach($lines as $line){
+		preg_match("/([^#]+)\=(.*)/",$line,$matches);
+		if(isset($matches[2])){ 
+			putenv(preg_replace("/\"$/","", preg_replace("/(^[a-zA-Z0-9_\-]+=)\"/m","$1",trim($line)))); 
+		}
+	} 
 	
 	function repondre ($msg, $statut)
 	//Répond au client via HTTP SSE.

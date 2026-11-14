@@ -1,18 +1,24 @@
 #! /bin/bash
-set -a
 
-if ! [ -v _PWD ];then
-	printf "Veuillez spécifier le répertoire du CTF : "
-	read "_PWD"
-fi
-
-if ! [ -v DOMAINE_GLOBAL ];then
-	source ${_PWD}/coordination/nom_domaine.env
-fi
-
-source .env
+cwd="$(realpath "$0" | sed -E "s/\/$(basename "$0")$//gm")"
 
 # Lecture des arguments reçus par le programme:
+
+# Les variables d'environnement doivent être lues avant pour que les paramètres les réécrivent
+for arg in "$@"; do
+	if [ "$arg" = "-f" ]; then
+		est_fichier_env="true"
+		continue
+	fi
+	if [ -v est_fichier_env ]; then
+		source "$arg"
+		break
+	fi
+done
+
+if [ "$est_fichier_env" != "true" ]; then
+	source "${cwd}/.env.exemple"
+fi
 
 for arg in "$@"
 do
@@ -20,18 +26,21 @@ do
 	in
 		--help | -h)
 			echo -e "Utilitaire de configuration de GDDD (version D).\n"
-			echo -e "Utilisez comme suit:\n./config.sh [ -h | -v ] [ -c ] [ -a IP -p #port ] [ -n nom ] [ -L ctfd.ctf ] [ -d dir/ ] [ -e equipes.json ] [ -i icone.svg -l logo.png ]\n"
-			echo "-h Affiche ce message d'aide, puis quitte sans rien faire"
-			echo "-v Affiche le numéro de version de ce script, puis quitte sans rien faire"
-			echo "-a Indique que le prochain argument sera l'addresse IP de GDDD"
-			echo "-c Copie les fichiers nécessaires au lieu de créer des symlinks"
+			echo -e "Utilisez comme suit:\n./config.sh [ -h | -v ] [ -f ] [ -c ] [ -a IP -p #port ] [ -n nom ] [ -L ctfd.ctf ] [ -d dir/ ] [ -e equipes.json ] [ -i icone.svg -l logo.png ]\n"
+			echo    "-h Affiche ce message d'aide, puis quitte sans rien faire"
+			echo    "-v Affiche le numéro de version de ce script, puis quitte sans rien faire"
+			echo    "-f Sécifie l'emplacement du fichier de configuration"
+			echo    "-a Indique que le prochain argument sera l'addresse IP de GDDD"
+			echo    "-c Copie les fichiers nécessaires au lieu de créer des symlinks"
 			echo -e "-d Indique que le prochain argument sera le dossier où se trouvent les catégories de défis (un dossier\n   par catégorie, chacun contenant un dossier par défi)"
-			echo "-e Indique que le prochain argument sera le fichier JSON où sont enregitrées les équipes"
-			echo "-i Indique que le prochain argument sera l'icone du CTF (petite image carée)"
-			echo "-l Indique que le prochain argument sera le logo du CTF (image rectangulaire en format paysage)"
-			echo "-L Indique que le prochain argument sera le lien vers l'instance de CTFd de l'évènement"
-			echo "-n Indique que le prochain argument sera le nom du CTF (entre guillemets s'il contient des espaces)"
-			echo "-p Indique que le prochain argument sera le numéro de port utilisé par GDDD"
+			echo    "-e Indique que le prochain argument sera le fichier JSON où sont enregitrées les équipes"
+			echo    "-i Indique que le prochain argument sera l'icone du CTF (petite image carée)"
+			echo    "-l Indique que le prochain argument sera le logo du CTF (image rectangulaire en format paysage)"
+			echo    "-L Indique que le prochain argument sera le lien vers l'instance de CTFd de l'évènement"
+			echo    "-n Indique que le prochain argument sera le nom du CTF (entre guillemets s'il contient des espaces)"
+			echo    "-p Indique que le prochain argument sera le numéro de port utilisé par GDDD"
+			echo    "--pwd 		Indique le dossier contenant le CTF"
+			echo    "--domaine 	Indique le nom de domaine global du CTF"
 			echo -e "\nTous ces arguments sont facultatifs et viennent modifier les valeurs inscrites dans le script.\nLeur ordre n'a pas d'importance.\n"
 			echo -e "Vous devez absolument exécuter ce script dans son dossier d'origine (c'est-à-dire la racine du repo).\n"
 			exit
@@ -42,7 +51,6 @@ do
 			echo "Compatible avec GDDD version D (0.2 et plus récent)"
 			exit
 			;;
-		
 		-a)
 			aLire=IP
 			;;
@@ -74,7 +82,15 @@ do
 		-n)
 			aLire=NOM_CTF
 			;;
-		
+		--pwd)
+			aLire=_PWD
+			;;
+		--domaine)
+			aLire=DOMAINE_GLOBAL
+			;;
+		-f)
+			aLire="fichier_env"
+			;;
 		*)
 			if [[ -v aLire ]]
 			then
@@ -88,6 +104,11 @@ do
 	esac
 done
 
+env_deploiement="# Ce fichier est généré automatiquement. Veuillez ne pas le modifier.\n"
+for var in $(grep -oE "^[a-zA-Z0-9_\-]+=" "${cwd}/.env.exemple"); do
+	env_deploiement="${env_deploiement}$(eval "echo \"${var}\\\"\$${var//=/}\\\"\n\"")"
+done
+printf "$env_deploiement" > .env.deploiement
 
 # Vérification de la présence des dossiers et fichiers requis:
 
@@ -145,16 +166,6 @@ then
 	ln -s "$ICONE" "./web/$(basename "$ICONE")" &> /dev/null
 	ln -s "$LOGO" "./web/$(basename "$LOGO")" &> /dev/null
 fi
-
-
-# Modification du site web:
-for fichier in ./web/*.{php,html}
-do
-	sed -i "s|<link rel=icon href=[^>]*>|<link rel=icon href=/$(basename "$ICONE")>|g" $fichier
-	sed -i "s|<a href=/><img src=[^>]* style=\"width: 180px\"></a>|<a href=/><img src=/$(basename "$LOGO") style=\"width: 180px\"></a>|g" $fichier
-	sed -i "s|\$nom_ctf = \"[^>]*\";|\$nom_ctf = \"$NOM_CTF\";|g" $fichier
-	sed -i "s|\$lien_ctfd = \"[^>]*\";|\$lien_ctfd = \"$LIEN_CTFD\";|g" $fichier
-done
 
 echo -e "\nGDDD a été configuré avec succès."
 echo -e "Démarrer le docker et naviguez à la bonne adresse pour vérifier.\n"

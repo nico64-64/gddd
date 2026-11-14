@@ -5,3 +5,5 @@ web/*.png
 web/*.webp
 web/*.jpg
 web/*.jpeg
+.env
+.env.deploiement
