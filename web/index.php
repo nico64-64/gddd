@@ -10,7 +10,7 @@
 		exit;
 	}
 	
-	$equipes = json_decode(file_get_contents("../equipes.json"), true)['equipes_ctfd'];
+	$equipes = json_decode(file_get_contents("/var/www/equipes.json"), true)['equipes_ctfd'];
 ?>
 
 <!DOCTYPE html>
@@ -20,7 +20,7 @@
 	<meta encoding=UTF-8>
 	<title>GDDD</title>
 	<link rel=stylesheet href=/style.css>
-	<link rel=icon href=/logo-small.svg>
+	<link rel=icon href=/Logo1.webp>
 	
 	<style>
 		#conteneur-portail
@@ -60,7 +60,7 @@
 
 <body>
 	<nav>
-		<a href=/><img src=/logo-large.svg style="width: 180px"></a>
+		<a href=/><img src=/Logo2.webp style="width: 180px"></a>
 	</nav>
 	
 	<page>

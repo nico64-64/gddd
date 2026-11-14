@@ -26,19 +26,19 @@
 	{
 		global $path_actuel;
 		$defis = [];
-		$path_actuel = "../defis/";
-		$categories = scandir("../defis");
+		$path_actuel = "/var/www/defis/";
+		$categories = scandir("/var/www/defis");
 		$categories = array_filter($categories, "filtre_dossiers");
 		foreach ($categories as $categorie)
 		{
-			$path_actuel = "../defis/$categorie/";
-			$liste_defis = scandir("../defis/$categorie/");
+			$path_actuel = "/var/www/defis/$categorie/";
+			$liste_defis = scandir("/var/www/defis/$categorie/");
 			$liste_defis = array_filter($liste_defis, "filtre_dossiers");
 			
 			foreach ($liste_defis as $defi)
 			{
-				$defis[] = json_decode(shell_exec("yq . \"../defis/$categorie/$defi/description.yaml\""), true);
-				$defis[count($defis) - 1]['path'] = "\"../defis/$categorie/$defi/\"";
+				$defis[] = json_decode(shell_exec("yq . \"/var/www/defis/$categorie/$defi/description.yaml\""), true);
+				$defis[count($defis) - 1]['path'] = "\"/var/www/defis/$categorie/$defi/\"";
 				
 				if (file_exists(str_replace("\"", "", $defis[count($defis) - 1]['path'] . $_SESSION['num_equipe'] . ".lock")) || file_exists(str_replace("\"", "", $defis[count($defis) - 1]['path'] . "all.lock")))
 				{$defis[count($defis) - 1]['statut'] = "occupe";}
@@ -53,7 +53,7 @@
 	if (!isset($_SESSION['equipe']))
 	//Le participant n'a pas encore été identifié
 	{
-		$equipes = json_decode(file_get_contents("../equipes.json"), true)['equipes_ctfd'];
+		$equipes = json_decode(file_get_contents("/var/www/equipes.json"), true)['equipes_ctfd'];
 		
 		if (!$_POST)
 		//Un petit finfinaud essaie d'accéder au portail sans se loguer
@@ -104,7 +104,7 @@
 	<meta encoding=UTF-8>
 	<title>GDDD</title>
 	<link rel=stylesheet href=/style.css>
-	<link rel=icon href=/logo-small.svg>
+	<link rel=icon href=/Logo1.webp>
 	
 	<style>
 		.defi
@@ -248,7 +248,7 @@
 
 <body>
 	<nav>
-		<a href=/><img src=/logo-large.svg style="width: 180px"></a>
+		<a href=/><img src=/Logo2.webp style="width: 180px"></a>
 	</nav>
 	
 	<page style="position: relative">

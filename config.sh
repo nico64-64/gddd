@@ -1,16 +1,12 @@
 #! /bin/bash
+set -a
 
+if ! [ -v _PWD ];then
+	printf "Veuillez spécifier le répertoire du CTF : "
+	read "_PWD"
+fi
 
-DEFIS_CATEGORISES=1 #obligatoire dans cette version du script
-SYMLINKS=1 #créer des symlinks vers les bons fichiers
-IP="127.0.0.1"
-NOM_CTF="\&lt;/UCTF 2026\&gt;"
-LIEN_CTFD="https://ctfd.uctf.ctf"
-DOSSIER_DEFIS=~/uctf/2026/defis
-FICHIER_EQUIPES=~/uctf/2026/coordination/comptes_utilisateurs.json
-ICONE=~/uctf/2026/ctfd/ctfd-fichiers/icone.svg
-LOGO=~/uctf/2026/ctfd/ctfd-fichiers/logo.svg
-
+source .env
 
 # Lecture des arguments reçus par le programme:
 
@@ -144,11 +140,6 @@ then
 	ln -s "$FICHIER_EQUIPES" ./equipes.json &> /dev/null
 	ln -s "$ICONE" "./web/$(basename "$ICONE")" &> /dev/null
 	ln -s "$LOGO" "./web/$(basename "$LOGO")" &> /dev/null
-else
-	cp -r "$DOSSIER_DEFIS" ./defis &> /dev/null
-	cp "$FICHIER_EQUIPES" ./equipes.json &> /dev/null
-	cp "$ICONE" "./web/$(basename "$ICONE")" &> /dev/null
-	cp "$LOGO" "./web/$(basename "$LOGO")" &> /dev/null
 fi
 
 
