@@ -4,7 +4,7 @@
 	session_start();
 	
 	//Charger les variables d'environnements
-	$env = file_get_contents("/.env");
+	$env = file_get_contents(realpath("../env/.env"));
 	$lines = explode("\n",$env);
 
 	foreach($lines as $line){
