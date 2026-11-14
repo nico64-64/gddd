@@ -6,6 +6,10 @@ if ! [ -v _PWD ];then
 	read "_PWD"
 fi
 
+if ! [ -v DOMAINE_GLOBAL ];then
+	source ${_PWD}/coordination/nom_domaine.env
+fi
+
 source .env
 
 # Lecture des arguments reçus par le programme:
