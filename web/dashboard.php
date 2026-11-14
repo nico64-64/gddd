@@ -297,14 +297,14 @@
 							
 							echo "<p style=\"text-align: left\" id=msg-modale>" . str_replace("\n", "<br>", $_SESSION['defis'][$_GET['defi']]['description']) . "</p>";
 							echo "<a class=bouton id=bouton-modale onclick=demarrerDefi()>Démarrer le défi</a>";
-							echo "<div class=loading style=\"display: none\"></div>";
+							echo "<div class=loading id=loading-modale style=\"display: none\"></div>";
 						}
 						else if ($_SESSION['defis'][$_GET['defi']]['statut'] == "occupe")
 						//défi à arrêter
 						{
 							echo "<p style\"text-align: left\" id=msg-modale>Une instance de ce défi est présentement en cours d'exécution.<br>Êtes-vous sûr de vraiment vouloir arrêter cette instance?</p>";
 							echo "<a class=bouton id=bouton-modale onclick=arreterDefi() style=\"background-color: darkred\">Arrêter le défi</a>";
-							echo "<div class=loading style=\"display: none\"></div>";
+							echo "<div class=loading id=loading-modale style=\"display: none\"></div>";
 						}
 						else
 						//défi au statut inconnu
@@ -315,10 +315,14 @@
 					}
 					else if (isset($_GET['demarre']))
 					{
+						if ($_SESSION['defis'][$_GET['demarre']]['statiques-dynamiques']['protocole'] == "SSH")
+						{$port = 2200 + $_SESSION['num_equipe'];}
+						else
+						{$port = 8000 + $_SESSION['num_equipe'];}
 						echo "<div id=header-modale><h2>" . $_SESSION['defis'][$_GET['demarre']]['titre'] . "</h2><a href=/dashboard.php id=x-modale>&times;</a></div>";
 						
-						echo "<p>Connectez-vous à " . $_SESSION['defis'][$_GET['demarre']]['statiques-dynamiques']['domaine'] . " par " . $_SESSION['defis'][$_GET['demarre']]['statiques-dynamiques']['protocole'] . ".</p>";
-						echo "<a class=bouton href=/dashboard.php?reload=1>Ok</a>";
+						echo "<p>Connectez-vous au port $port de " . $_SESSION['defis'][$_GET['demarre']]['statiques-dynamiques']['domaine'] . " par " . $_SESSION['defis'][$_GET['demarre']]['statiques-dynamiques']['protocole'] . ".</p>";
+						echo "<a class=bouton id=bouton-modale-ok onclick=reloadPostDemarrage()>Ok</a><div class=loading id=loading-modale style=\"display: none\"></div>";
 					}
 				?>
 			</div>
@@ -362,6 +366,13 @@
 				//ici, je supprime les commentaires de format /*** commentaire ***/
 			}
 		?>
+		
+		function reloadPostDemarrage ()
+		{
+			document.getElementById('bouton-modale-ok').style.display = 'none';
+			document.getElementById('loading-modale').style.display = 'inline-block';
+			window.location.href = "/dashboard.php?reload=1";
+		};
 	</script>
 </body>
 </html>

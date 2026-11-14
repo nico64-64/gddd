@@ -6,7 +6,7 @@
 btnDemarrer = document.getElementById('bouton-modale');
 btnFermerModale = document.getElementById('x-modale');
 msgModale = document.getElementById('msg-modale');
-loading = document.querySelector('.loading');
+loadingModale = document.getElementById('loading-modale');
 
 function demarrerDefi()
 {
@@ -15,7 +15,7 @@ function demarrerDefi()
 	msgModale.innerHTML = "Connexion au serveur...";
 	btnDemarrer.style.display = "none";
 	btnFermerModale.style.display = "none";
-	loading.style.display = "inline-block";
+	loadingModale.style.display = "inline-block";
 	
 	eventSource.onmessage = function (ev)
 	{
@@ -31,6 +31,7 @@ function demarrerDefi()
 		else if (donnees.statut == 503)
 		{
 			msgModale.innerHTML = "<h3 style=\"color: red\">Ce défi est déjà démarré.</h3><br><br>" + donnees.msg;
+			loadingModale.style.display = "none";
 			eventSource.close();
 		}
 	};
@@ -50,7 +51,7 @@ function arreterDefi()
 	msgModale.innerHTML = "Connexion au serveur...";
 	btnDemarrer.style.display = "none";
 	btnFermerModale.style.display = "none";
-	loading.style.display = "inline-block";
+	loadingModale.style.display = "inline-block";
 	
 	eventSource.onmessage = function (ev)
 	{
@@ -66,6 +67,7 @@ function arreterDefi()
 		else if (donnees.statut == 503)
 		{
 			msgModale.innerHTML = "<h3 style=\"color: red\">Ce défi est déjà arrêté.</h3><br><br>" + donnees.msg;
+			loadingModale.style.display = "none";
 			eventSource.close();
 		}
 	};
