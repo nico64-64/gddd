@@ -4,24 +4,10 @@ cwd="$(realpath "$0" | sed -E "s/\/$(basename "$0")$//gm")"
 
 # Lecture des arguments reçus par le programme:
 
+
+
 # Les variables d'environnement doivent être lues avant pour que les paramètres les réécrivent
 for arg in "$@"; do
-	if [ "$arg" = "-f" ]; then
-		est_fichier_env="true"
-		continue
-	fi
-	if [ -v est_fichier_env ]; then
-		source "$arg"
-		break
-	fi
-done
-
-if [ "$est_fichier_env" != "true" ]; then
-	source "${cwd}/.env.exemple"
-fi
-
-for arg in "$@"
-do
 	case "$arg"
 	in
 		--help | -h)
@@ -51,6 +37,30 @@ do
 			echo "Compatible avec GDDD version D (0.2 et plus récent)"
 			exit
 			;;
+		-f)
+			aLire=fichier_env
+			;;
+		-a| -c| -d| -e| -i| -l| -L| -n | --pwd | --domaine)
+			continue
+			;;
+		*)
+			if [[ -v aLire ]]
+			then
+				declare "$aLire=$arg"
+				unset aLire
+			fi
+			;;
+	esac
+done
+
+if ! [ -v "$fichier_envv" ]; then
+	source "${cwd}/.env.exemple"
+fi
+
+for arg in "$@"
+do
+	case "$arg"
+	in
 		-a)
 			aLire=IP
 			;;
@@ -88,8 +98,8 @@ do
 		--domaine)
 			aLire=DOMAINE_GLOBAL
 			;;
-		-f)
-			aLire="fichier_env"
+		-f | --help | -h | --version | -v)
+			continue
 			;;
 		*)
 			if [[ -v aLire ]]
