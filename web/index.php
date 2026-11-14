@@ -1,8 +1,19 @@
 <?php
 	session_start();
+
+	//Charger les variables d'environnements
+	$env = file_get_contents("/.env");
+	$lines = explode("\n",$env);
+
+	foreach($lines as $line){
+		preg_match("/([^#]+)\=(.*)/",$line,$matches);
+		if(isset($matches[2])){ 
+			putenv(preg_replace("/\"$/","", preg_replace("/(^[a-zA-Z0-9_\-]+=)\"/m","$1",trim($line)))); 
+		}
+	} 
 	
-	$lien_ctfd = "https://ctfd.uctf.ctf";
-	$nom_ctf = "&lt;/UCTF 2026&gt;";
+	$lien_ctfd = getenv("LIEN_CTFD");
+	$nom_ctf = getenv("NOM_CTF");
 	
 	if (isset($_SESSION['equipe']))
 	{
@@ -10,7 +21,7 @@
 		exit;
 	}
 	
-	$equipes = json_decode(file_get_contents("../equipes.json"), true)['equipes_ctfd'];
+	$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR")."/equipes.json"), true)['equipes_ctfd'];
 ?>
 
 <!DOCTYPE html>
@@ -20,7 +31,7 @@
 	<meta encoding=UTF-8>
 	<title>GDDD</title>
 	<link rel=stylesheet href=/style.css>
-	<link rel=icon href=/logo-small.svg>
+	<link rel=icon href=/<?php echo getenv("ICONE_SERVEUR") ?>>
 	
 	<style>
 		#conteneur-portail
@@ -60,7 +71,7 @@
 
 <body>
 	<nav>
-		<a href=/><img src=/logo-large.svg style="width: 180px"></a>
+		<a href=/><img src=/<?php echo getenv("LOGO_SERVEUR") ?> style="width: 180px"></a>
 	</nav>
 	
 	<page>
