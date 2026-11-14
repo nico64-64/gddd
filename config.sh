@@ -16,10 +16,9 @@ for arg in "$@"; do
 			echo    "-h Affiche ce message d'aide, puis quitte sans rien faire"
 			echo    "-v Affiche le numéro de version de ce script, puis quitte sans rien faire"
 			echo    "-f Sécifie l'emplacement du fichier de configuration"
-			echo    "-a Indique que le prochain argument sera l'addresse IP de GDDD"
 			echo    "-c Copie les fichiers nécessaires au lieu de créer des symlinks"
 			echo -e "-d Indique que le prochain argument sera le dossier où se trouvent les catégories de défis (un dossier\n   par catégorie, chacun contenant un dossier par défi)"
-			echo    "-e Indique que le prochain argument sera le fichier JSON où sont enregitrées les équipes"
+			echo    "-e Indique que le prochain argument sera le fichier JSON où sont enregistrées les équipes"
 			echo    "-i Indique que le prochain argument sera l'icone du CTF (petite image carée)"
 			echo    "-l Indique que le prochain argument sera le logo du CTF (image rectangulaire en format paysage)"
 			echo    "-L Indique que le prochain argument sera le lien vers l'instance de CTFd de l'évènement"
@@ -40,8 +39,11 @@ for arg in "$@"; do
 		-f)
 			aLire=fichier_env
 			;;
-		-a| -c| -d| -e| -i| -l| -L| -n | --pwd | --domaine)
-			continue
+		--pwd)
+			aLire=_PWD
+			;;
+		--domaine)
+			aLire=DOMAINE_GLOBAL
 			;;
 		*)
 			if [[ -v aLire ]]
@@ -53,18 +55,14 @@ for arg in "$@"; do
 	esac
 done
 
-if ! [ -v "$fichier_envv" ]; then
+if ! [ -v "$fichier_env" ]; then
 	source "${cwd}/.env.exemple"
 fi
 
 for arg in "$@"
 do
 	case "$arg"
-	in
-		-a)
-			aLire=IP
-			;;
-		
+	in		
 		-c)
 			unset SYMLINKS
 			;;
@@ -92,13 +90,11 @@ do
 		-n)
 			aLire=NOM_CTF
 			;;
-		--pwd)
-			aLire=_PWD
+		-p)
+			aLire=PORT
 			;;
-		--domaine)
-			aLire=DOMAINE_GLOBAL
-			;;
-		-f | --help | -h | --version | -v)
+		-f | --help | -h | --version | -v | --pwd | --domaine)
+			# BUG
 			continue
 			;;
 		*)
@@ -113,6 +109,8 @@ do
 			;;
 	esac
 done
+
+# Enregistrement des variables pour les autres scripts
 
 env_deploiement="# Ce fichier est généré automatiquement. Veuillez ne pas le modifier.\n"
 for var in $(grep -oE "^[a-zA-Z0-9_\-]+=" "${cwd}/.env.exemple"); do

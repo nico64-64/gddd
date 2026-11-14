@@ -2,7 +2,7 @@
 cwd="$(realpath "$0" | sed -E "s/\/$(basename "$0")$//gm")"
 source "${cwd}/.env.deploiement"
 docker build -t gddd .
-docker run --rm --name gddd -d -p 8000:80 \
+docker run --rm --name gddd -d -p ${PORT}:80 \
     -v "${cwd}/.env.deploiement:/.env" \
     -v "${cwd}/entrypoint.sh:/entrypoint.sh" \
     -v "${cwd}/web:/var/www/web" \
