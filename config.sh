@@ -116,7 +116,8 @@ env_deploiement="# Ce fichier est généré automatiquement. Veuillez ne pas le 
 for var in $(grep -oE "^[a-zA-Z0-9_\-]+=" "${cwd}/.env.exemple"); do
 	env_deploiement="${env_deploiement}$(eval "echo \"${var}\\\"\$${var//=/}\\\"\n\"")"
 done
-printf "$env_deploiement" > .env.deploiement
+mkdir -p "${cwd}/env"
+printf "$env_deploiement" > "${cwd}/env/.env"
 
 # Vérification de la présence des dossiers et fichiers requis:
 
