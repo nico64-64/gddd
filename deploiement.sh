@@ -6,9 +6,9 @@ docker run --rm --name gddd -d -p "${PORT}:80" \
     -v "${cwd}/env/:/var/www/env/" \
     -v "${cwd}/entrypoint.sh:/entrypoint.sh" \
     -v "${cwd}/web:/var/www/web" \
-    -v "./${DOSSIER_DEFIS}:/var/www/defis" \
-    -v "./${FICHIER_EQUIPES}:/var/www/equipes.json" \
-    -v "./${ICONE}:/var/www/web/$(basename "${ICONE}")" \
-    -v "./${LOGO}:/var/www/web/$(basename "${LOGO}")" \
+    -v "${DOSSIER_DEFIS}:/var/www/defis" \
+    -v "${FICHIER_EQUIPES}:/var/www/equipes.json" \
+    -v "${ICONE}:/var/www/web/$(basename "${ICONE}")" \
+    -v "${LOGO}:/var/www/web/$(basename "${LOGO}")" \
     -v "${cwd}/nginx.conf:/etc/nginx/conf.d/default.conf" \
     gddd

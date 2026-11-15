@@ -6,4 +6,4 @@ web/*.webp
 web/*.jpg
 web/*.jpeg
 .env
-.env.deploiement
+env/

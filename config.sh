@@ -114,7 +114,18 @@ done
 
 env_deploiement="# Ce fichier est généré automatiquement. Veuillez ne pas le modifier.\n"
 for var in $(grep -oE "^[a-zA-Z0-9_\-]+=" "${cwd}/.env.exemple"); do
-	env_deploiement="${env_deploiement}$(eval "echo \"${var}\\\"\$${var//=/}\\\"\n\"")"
+	var="${var//=/}"
+	if  [ "$var" = "DOSSIER_DEFIS" ] ||
+		[ "$var" = "FICHIER_EQUIPES" ] ||
+		[ "$var" = "ICONE" ] ||
+		[ "$var" = "LOGO" ] ||
+		[ "$var" = "RACINE_SERVEUR" ] ||
+		[ "$var" = "ICONE_SERVEUR" ] ||
+		[ "$var" = "LOGO_SERVEUR" ]; then
+		regex="s/^([^\/\.])/.\/\1/"
+		eval "$var=\$(echo \$$var | sed -E \"\$regex\" )"
+	fi
+	env_deploiement="${env_deploiement}$(eval "echo \"${var}=\\\"\$${var}\\\"\n\"")"
 done
 mkdir -p "${cwd}/env"
 printf "$env_deploiement" > "${cwd}/env/.env"
