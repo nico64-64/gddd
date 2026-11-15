@@ -62,15 +62,15 @@
 		else
 		{$port = 8000 + $_SESSION['num_equipe'];}
 		repondre('Démarrage...', 100); //seul le statut est utilisé
-		shell_exec("cd " . $_SESSION['defis'][$_GET['defi']]['path'] . " && EQUIPE=$_SESSION[num_equipe] PORT=$port \"./" . $_SESSION['defis'][$_GET['defi']]['script_instanciation'] . "\"");
-		error_log("Lancement du défi " . $_SESSION['defis'][$_GET['defi']]['id'] . ": cd " . $_SESSION['defis'][$_GET['defi']]['path'] . " && EQUIPE=$_SESSION[num_equipe] \"./" . $_SESSION['defis'][$_GET['defi']]['script_instanciation'] . "\"");
+		shell_exec("cd " . $_SESSION['defis'][$_GET['defi']]['path'] . " && EQUIPE=$_SESSION[num_equipe] PORT=$port \"./" . $_SESSION['defis'][$_GET['defi']]['statiques-dynamiques']['installation']['script_instanciation'] . "\"");
+		error_log("Lancement du défi " . $_SESSION['defis'][$_GET['defi']]['titre'] . ": cd " . $_SESSION['defis'][$_GET['defi']]['path'] . " && EQUIPE=$_SESSION[num_equipe] \"./" . $_SESSION['defis'][$_GET['defi']]['statiques-dynamiques']['installation']['script_instanciation'] . "\"");
 		error_log("Port $port à l'adresse " . $_SESSION['defis'][$_GET['defi']]['statiques-dynamiques']['domaine']);
 		repondre('Prêt!', 200); //seul le statut est utilisé
 	}
 	else
 	{
 		repondre('Démarrage...', 100); //seul le statut est utilisé
-		shell_exec("cd " . $_SESSION['defis'][$_GET['defi']]['path'] . " && EQUIPE=$_SESSION[num_equipe] \"./" . $_SESSION['defis'][$_GET['defi']]['script_destruction'] . "\"");
+		shell_exec("cd " . $_SESSION['defis'][$_GET['defi']]['path'] . " && EQUIPE=$_SESSION[num_equipe] \"./" . $_SESSION['defis'][$_GET['defi']]['statiques-dynamiques']['installation']['script_destruction'] . "\"");
 		repondre('Terminé!', 200); //seul le statut est utilisé
 	}
 ?>
