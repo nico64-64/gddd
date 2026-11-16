@@ -15,6 +15,10 @@
 	} 
 	
 	function filtre_dossiers ($dossier)
+	//Filtre un array pour n'y conserver que les valeurs qui sont des dossiers dans $path_actuel (variable globale).
+	//À utiliser comme callback avec array_filter().
+	// !! FONCTION DÉPRÉCIÉE !!
+	//Cette fonction est seulement utilisée par charger_defis(), qui est dépréciée.
 	{
 		global $path_actuel;
 		if ($dossier == "." || $dossier == "..")
@@ -24,6 +28,8 @@
 	
 	
 	function filtre_defis ($defi)
+	//Filtre un array pour n'y conserver que les défis qui sont visibles et dynamiques.
+	//À utiliser comme callback avec array_filter().
 	{
 		if ($defi['type'] == "dynamique" && $defi['etat'] == "visible")
 		{return true;}
@@ -32,7 +38,24 @@
 	}
 	
 	
+	function nombre_instances ()
+	{
+		$nbre = 0;
+		foreach ($_SESSION['defis'] as $defi)
+		{
+			if (file_exists(str_replace("\"", "", $defi['path'] . $_SESSION['num_equipe'] . ".lock")))
+			{$nbre++;}
+		}
+		return $nbre;
+	}
+	
+	
 	function charger_defis ()
+	//Charge toutes les descriptions.yaml des défis déployées par GDDDvD dans un array renvoyé à la fin.
+	//Cette fonction prend du temps à s'éexécuter parce qu'elle entre dans tous les dossiers de défis.
+	// !! FONCTION DÉPRÉCIÉE !!
+	//Utiliser plutôt charger_defis_json() pour lire le fichier JSON généré par le script de lancement de CTFd amalgamant l'ensemble des descriptions.yaml.
+	//Cette fonction reste disponible au cas où le json ne serait pas disponible et fournit exactement les mêmes fonctionnalités que la nouvelle, mais prend plusieurs secondes à s'éexécuter, contrairement à la nouvelle.
 	{
 		global $path_actuel;
 		$defis = [];
@@ -56,6 +79,25 @@
 				{$defis[count($defis) - 1]['statut'] = "pret";}
 			}
 		}
+		return array_values(array_filter($defis, "filtre_defis"));
+	}
+	
+	
+	function charger_defis_json ()
+	//Charge les descriptions de défis contenues dans defis.json de tous les défis déployés par GDDDvD dans un array renvoyé à la fin.
+	//Il s'agit d'une version plus rapide (et sans dépendance envers yq) de charger_defis(), mais qui nécessite une version plus récente du script d'installation de CTFd.
+	{
+		$defis = json_decode(file_get_contents(getenv("RACINE_SERVEUR", "..") . "/defis/deploiement/defis.json"), true);
+		foreach ($defis as &$defi)
+		{
+			$defi['path'] = getenv("RACINE_SERVEUR", "..") . $defi['repertoire'] . "/";
+			unset($defi['repertoire']);
+			if (file_exists(str_replace("\"", "", $defi['path'] . $_SESSION['num_equipe'] . ".lock")) || file_exists(str_replace("\"", "", $defi['path'] . "all.lock")))
+			{$defi['statut'] = "occupe";}
+			else
+			{$defi['statut'] = "pret";}
+		}
+		unset($defi); //puisqu'utilisé directement (par référence) dans la foreach loop
 		return array_values(array_filter($defis, "filtre_defis"));
 	}
 	
@@ -92,7 +134,7 @@
 	if (!isset($_SESSION['dernier_reload']) || isset($_GET['reload']) || time() - $_SESSION['dernier_reload'] > 300)
 	//Relecture des défis
 	{
-		$_SESSION['defis'] = charger_defis();
+		$_SESSION['defis'] = charger_defis_json(); //on peut aussi utiliser charger_defis() (voir la définition de ces fonctions)
 		$_SESSION['dernier_reload'] = time();
 		header('Location: /dashboard.php', true, 302);
 		exit;
@@ -340,7 +382,7 @@
 	</page>
 	
 	<footer>
-		<p><strong>GDDD vD0.2</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
+		<p><strong>GDDD vD0.3</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
 	</footer>
 	
 	<script>

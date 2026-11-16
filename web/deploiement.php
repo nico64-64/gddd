@@ -10,7 +10,7 @@
 		if(isset($matches[2])){ 
 			putenv(preg_replace("/\"$/","", preg_replace("/(^[a-zA-Z0-9_\-]+=)\"/m","$1",trim($line)))); 
 		}
-	} 
+	}
 	
 	function repondre ($msg, $statut)
 	//Répond au client via HTTP SSE.
@@ -68,8 +68,9 @@
 		repondre('Prêt!', 200); //seul le statut est utilisé
 	}
 	else
+	//Suppression de l'instance
 	{
-		repondre('Démarrage...', 100); //seul le statut est utilisé
+		repondre('Supression...', 100); //seul le statut est utilisé
 		shell_exec("cd " . $_SESSION['defis'][$_GET['defi']]['path'] . " && EQUIPE=$_SESSION[num_equipe] \"./" . $_SESSION['defis'][$_GET['defi']]['statiques-dynamiques']['installation']['script_destruction'] . "\"");
 		repondre('Terminé!', 200); //seul le statut est utilisé
 	}

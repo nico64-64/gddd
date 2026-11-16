@@ -9,6 +9,7 @@ msgModale = document.getElementById('msg-modale');
 loadingModale = document.getElementById('loading-modale');
 
 function demarrerDefi()
+/*** Créé et monitore une connexion SSE avec le serveur pour démarrer un défi. ***/
 {
 	clearInterval(intervalId); //pas de reload quand on démarre un défi!
 	eventSource = new EventSource('/deploiement.php?type=demarrer&defi=' + defi); //envoi de la requête SSE
@@ -45,6 +46,7 @@ function demarrerDefi()
 }
 
 function arreterDefi()
+/*** Créé et monitore une connexion SSE avec le serveur pour fermer un défi. ***/
 {
 	clearInterval(intervalId); //pas de reload quand on démarre un défi!
 	eventSource = new EventSource('/deploiement.php?type=arreter&defi=' + defi); //envoi de la requête SSE

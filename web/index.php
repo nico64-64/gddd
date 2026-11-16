@@ -10,7 +10,7 @@
 		if(isset($matches[2])){ 
 			putenv(preg_replace("/\"$/","", preg_replace("/(^[a-zA-Z0-9_\-]+=)\"/m","$1",trim($line)))); 
 		}
-	} 
+	}
 	
 	$lien_ctfd = getenv("LIEN_CTFD");
 	$nom_ctf = getenv("NOM_CTF");
@@ -108,7 +108,7 @@
 	</page>
 	
 	<footer>
-		<p><strong>GDDD vD0.2</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
+		<p><strong>GDDD vD0.3</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
 	</footer>
 </body>
 </html>
