@@ -32,6 +32,7 @@ then
 	exit
 fi
 
+
 # Modification du hostname:
 echo "$NOM" > /etc/hostname
 
@@ -39,24 +40,16 @@ echo "$NOM" > /etc/hostname
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get upgrade -y
-apt-get install -y curl jq
+apt-get install -y curl jq yq
 curl -fsSL https://get.docker.com | sh
-
-# Lecture des informations des équipes:
-#equipes=()
-#for equipe in $(jq .equipes_ctfd.[].nom /root/equipes.json -r -M)
-#do
-#	equipe=$(echo \"$equipe\" | sed 's/[^a-zA-Z0-9]/_/g')
-#	equipes+=($equipe)
-#done
-#passwd=()
-#for mdp in $(jq .equipes_ctfd.[].mdp /root/equipes.json -r -M)
-#do
-#	passwd+=($mdp)
-#done
 
 # Création du compte de l'équipe
 useradd "$NOM" -G docker -m -p "$MDP" -s /bin/bash -U
+
+# Création des dossiers et des fichiers des défis
+mkdir /root/defis
+mkdir "/home/$NOM/defis"
+
 
 # Terminé!
 touch /root/.config_complete
