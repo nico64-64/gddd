@@ -39,6 +39,9 @@
 		exit;
 	}
 	
+	//Lecture du fichier de configuration des machines:
+	$machines = json_decode(file_get_contents(getenv("RACINE_SERVEUR", "..") . "/machines.json"), true)['defis-dynamiques'];
+	
 	//Configuration SSE:
 	header('Content-Type: text/event-stream');
 	header('Cache-Control: no-cache, no-store, must-revalidate');
@@ -46,32 +49,38 @@
 	header('Expires: 0');
 	header('Connection: keep-alive');
 	
+	/* TODO: À recoder
+	
 	if ((!file_exists(str_replace("\"", "", $_SESSION['defis'][$_GET['defi']]['path'] . $_SESSION['num_equipe'] . ".lock")) && $_GET['type'] == "arreter") || ($_GET['type'] == "demarrer" && (file_exists(str_replace("\"", "", $_SESSION['defis'][$_GET['defi']]['path'] . $_SESSION['num_equipe'] . ".lock")) || file_exists(str_replace("\"", "", $_SESSION['defis'][$_GET['defi']]['path'] . "all.lock")))))
 	//Vérifie si le défi est actuellement bloqué ou occupé et qu'on veut le démarrer ou s'il est déjà arrêté et qu'on veut l'arrêter
 	{
 		repondre(str_replace("ERR_CODE", "503 Service Unavailable", file_get_contents("erreur.html")), 503);
 		error_log("[503 Service Unavailable]");
 		exit;
-	}
+	}*/
 	
 	if ($_GET['type'] == "demarrer")
 	//Démarrage du défi
 	{
-		if ($_SESSION['defis'][$_GET['defi']]['statiques-dynamiques']['protocole'] == "SSH")
-		{$port = 2200 + $_SESSION['num_equipe'];}
+		$_SESSION['defis'][$_GET['defi']]['port'] = 2000 + $_SESSION['num_equipe'] * 1000 + rand(1, 999);
+		
+		if (!file_put_contents(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_SESSION[num_equipe].lock", "...", LOCK_EX))
+		{repondre(str_replace("ERR_CODE", "409 Conflict", file_get_contents("erreur.html")), 409);}
 		else
-		{$port = 8000 + $_SESSION['num_equipe'];}
-		repondre('Démarrage...', 100); //seul le statut est utilisé
-		shell_exec("cd " . $_SESSION['defis'][$_GET['defi']]['path'] . " && EQUIPE=$_SESSION[num_equipe] PORT=$port \"./" . $_SESSION['defis'][$_GET['defi']]['statiques-dynamiques']['installation']['script_instanciation'] . "\"");
-		error_log("Lancement du défi " . $_SESSION['defis'][$_GET['defi']]['titre'] . ": cd " . $_SESSION['defis'][$_GET['defi']]['path'] . " && EQUIPE=$_SESSION[num_equipe] \"./" . $_SESSION['defis'][$_GET['defi']]['statiques-dynamiques']['installation']['script_instanciation'] . "\"");
-		error_log("Port $port à l'adresse " . $_SESSION['defis'][$_GET['defi']]['statiques-dynamiques']['domaine']);
-		repondre('Prêt!', 200); //seul le statut est utilisé
+		{
+			repondre('Démarrage...', 100); //seul le statut est utilisé
+			shell_exec("ssh root@" . $machines[$_SESSION['num_equipe']]['ip'] . " -t \"NOM='" . $_SESSION['equipe'] . "' DEFI='" . basename($_SESSION['defis'][$_GET['defi']]['path']) . "' PORT=" . $_SESSION['defis'][$_GET['defi']]['port'] . " /home/" . $_SESSION['equipe'] . "/gererDefi.sh -d &> /home/$_SESSION[equipe]/gererDefi.log\"");
+			error_log("Service en ligne au port " . $_SESSION['defis'][$_GET['defi']]['port'] . " de l'adresse " . $machines[$_SESSION['num_equipe']]['ip']);
+			sleep(1);
+			repondre('Terminé!', 204); //seul le statut est utilisé
+		}
 	}
 	else
 	//Suppression de l'instance
 	{
 		repondre('Supression...', 100); //seul le statut est utilisé
-		shell_exec("cd " . $_SESSION['defis'][$_GET['defi']]['path'] . " && EQUIPE=$_SESSION[num_equipe] \"./" . $_SESSION['defis'][$_GET['defi']]['statiques-dynamiques']['installation']['script_destruction'] . "\"");
-		repondre('Terminé!', 200); //seul le statut est utilisé
+		shell_exec("ssh root@" . $machines[$_SESSION['num_equipe']]['ip'] . " -t \"NOM='" . $_SESSION['equipe'] . "' DEFI='" . basename($_SESSION['defis'][$_GET['defi']]['path']) . "' PORT=" . $_SESSION['defis'][$_GET['defi']]['port'] . " /home/" . $_SESSION['equipe'] . "/gererDefi.sh -a &> /home/$_SESSION[equipe]/gererDefi.log\"");
+		unlink(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_SESSION[num_equipe].lock");
+		repondre('Terminé!', 204); //seul le statut est utilisé
 	}
 ?>

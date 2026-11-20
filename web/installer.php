@@ -23,31 +23,38 @@
 	$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR","..")."/equipes.json"), true)['equipes_ctfd'];
 	$machines = json_decode(file_get_contents(getenv("RACINE_SERVEUR", "..") . "/machines.json"), true)['defis-dynamiques'];
 	
-	if (count($equipes) - 1 != count($machines)) //le -1 sert à compenser pour l'équipe "admins" qui n'a pas de machine de défis dynamiques
+	if (count($equipes) != count($machines))
 	//Il manque une machine de défis dynamique ou on en a de trop
 	{
 		http_response_code(500);
-		echo str_replace("ERR_CODE", "500 Internal Error<br>Il y a " . count($equipes) - 1 . " équipes pour " . count($machines) . " machines de défis dynamiques...", file_get_contents("erreur.html"));
+		echo str_replace("ERR_CODE", "500 Internal Error<br>Il y a " . count($equipes) . " équipes pour " . count($machines) . " machines de défis dynamiques...", file_get_contents("erreur.html"));
 		exit;
 	}
 	
 	//Configuration des VMs et installation des défis dynamiques dessus
 	for ($i = 0; $i < count($machines); $i++)
 	{
-		error_log("Équipe $i:\nConfiguration de la VM...");
-		shell_exec("scp " . getenv("RACINE_SERVEUR", "..") . "/configVM.sh" . " scp://root@" . $machines[$i]['ip'] . "/configVM.sh");
-		shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"chmod +x /root/configVM.sh\"");
-		shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"NOM='" . $equipes[$i]['nom'] . "' MDP='" . $equipes[$i]['mdp'] . "' /root/configVM.sh &> /root/configVM.log\"");
-		
-		error_log("Machine configurée. Envoi des défis...");
-		shell_exec("scp " . getenv("RACINE_SERVEUR", "..") . "/configDefis.sh" . " scp://root@" . $machines[$i]['ip'] . "/configDefis.sh");
-		shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"chmod +x /root/configDefis.sh\"");
-		foreach ($_SESSION['defis'] as $defi)
-		{shell_exec("scp -r $defi[path] scp://root@" . $machines[$i]['ip'] . "/defis/\$(basename '$defi[path]')");}
-		shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"NOM='" . $equipes[$i]['nom'] . "' /root/configDefis.sh &> /root/configDefis.log\"");
-		
-		error_log("Défis installés. Redémarrage de la VM...");
-		shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"reboot && logout\"");
+		if (!isset($machines[$i]['est_admin']) || $machines[$i]['est_admin'] != true)
+		{
+			error_log("Équipe $i:\nConfiguration de la VM...");
+			shell_exec("scp " . getenv("RACINE_SERVEUR", "..") . "/configVM.sh" . " scp://root@" . $machines[$i]['ip'] . "/configVM.sh");
+			shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"chmod +x /root/configVM.sh\"");
+			shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"NOM='" . $equipes[$i]['nom'] . "' MDP='" . $equipes[$i]['mdp'] . "' /root/configVM.sh &> /root/configVM.log\"");
+			shell_exec("scp " . getenv("RACINE_SERVEUR", "..") . "/gererDefi.sh" . " scp://root@" . $machines[$i]['ip'] . "//home/" . $equipes[$i]['nom'] . "/gererDefi.sh");
+			shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"chmod +x /home/" . $equipes[$i]['nom'] . "/gererDefi.sh\"");
+			
+			error_log("Machine configurée. Envoi des défis...");
+			shell_exec("scp " . getenv("RACINE_SERVEUR", "..") . "/configDefis.sh" . " scp://root@" . $machines[$i]['ip'] . "/configDefis.sh");
+			shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"chmod +x /root/configDefis.sh\"");
+			foreach ($_SESSION['defis'] as $defi)
+			{shell_exec("scp -r $defi[path] scp://root@" . $machines[$i]['ip'] . "/defis/\$(basename '$defi[path]')");}
+			shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"NOM='" . $equipes[$i]['nom'] . "' /root/configDefis.sh &> /root/configDefis.log\"");
+			
+			error_log("Défis installés. Redémarrage de la VM...");
+			shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"reboot && logout\"");
+		}
+		else
+		{error_log("On skip la machine #$i (machine admin)...");}
 	}
 ?>
 

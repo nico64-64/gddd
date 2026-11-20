@@ -40,8 +40,31 @@ do
 	pushd "/home/$NOM/defis/$(basename "$defi")"
 	
 	INSTALLATION=$(yq -M -r .\"statiques-dynamiques\".installation.script_installation "$defi/description.yaml")
-	chmod +x "$INSTALLATION"
+	if [ -f "$INSTALLATION" ]
+	then
+		chmod +x "$INSTALLATION"
+	else
+		echo -e "Erreur: Le script d'installation du défi $defi n'a pas été trouvé.\nOn va essayer de l'exécuter quand même..."
+	fi
 	"./$INSTALLATION"
+	
+	INSTANCIATION=$(yq -M -r .\"statiques-dynamiques\".installation.script_instanciation "$defi/description.yaml")
+	echo "$INSTANCIATION" > .script_instanciation
+	if [ -f "$INSTANCIATION" ]
+	then
+		chmod +x "$INSTANCIATION"
+	else
+		echo "Erreur: Le script d'instanciation du défi $defi n'a pas été trouvé."
+	fi
+	
+	DESTRUCTION=$(yq -M -r .\"statiques-dynamiques\".installation.script_destruction "$defi/description.yaml")
+	echo "$DESTRUCTION" > .script_destruction
+	if [ -f "$DESTRUCTION" ]
+	then
+		chmod +x "$DESTRUCTION"
+	else
+		echo "Erreur: Le script de destruction du défi $defi n'a pas été trouvé."
+	fi
 	
 	popd
 	chown -R "$NOM:$NOM" "/home/$NOM/defis/$(basename "$defi")"

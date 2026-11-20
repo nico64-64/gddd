@@ -7,6 +7,8 @@ btnDemarrer = document.getElementById('bouton-modale');
 btnFermerModale = document.getElementById('x-modale');
 msgModale = document.getElementById('msg-modale');
 loadingModale = document.getElementById('loading-modale');
+/*** defi = numéro du défi (loadé par PHP) ***/
+
 
 function demarrerDefi()
 /*** Créé et monitore une connexion SSE avec le serveur pour démarrer un défi. ***/
@@ -23,7 +25,7 @@ function demarrerDefi()
 		donnees = JSON.parse(ev.data);
 		if (donnees.statut == 100)
 		{msgModale.innerHTML = "Démarrage du défi...<br>Svp patienter quelques instants.<br><strong>NE FERMEZ PAS CETTE PAGE!<strong>";}
-		else if (donnees.statut == 200)
+		else if (donnees.statut == 204)
 		{
 			msgModale.innerHTML = "Démarrage terminé!<br>Vous serez redirigés dans un instant...";
 			eventSource.close();
@@ -48,7 +50,7 @@ function demarrerDefi()
 function arreterDefi()
 /*** Créé et monitore une connexion SSE avec le serveur pour fermer un défi. ***/
 {
-	clearInterval(intervalId); //pas de reload quand on démarre un défi!
+	clearInterval(intervalId); //pas de reload quand on arrête un défi!
 	eventSource = new EventSource('/deploiement.php?type=arreter&defi=' + defi); //envoi de la requête SSE
 	msgModale.innerHTML = "Connexion au serveur...";
 	btnDemarrer.style.display = "none";
@@ -60,7 +62,7 @@ function arreterDefi()
 		donnees = JSON.parse(ev.data);
 		if (donnees.statut == 100)
 		{msgModale.innerHTML = "Arrêt de l'instance du défi...<br>Svp patienter quelques instants.<br><strong>NE FERMEZ PAS CETTE PAGE!<strong>";}
-		else if (donnees.statut == 200)
+		else if (donnees.statut == 204)
 		{
 			msgModale.innerHTML = "Arrêt terminé!<br>Vous serez redirigés dans un instant...";
 			eventSource.close();

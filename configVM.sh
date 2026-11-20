@@ -34,19 +34,19 @@ fi
 
 
 # Modification du hostname:
-echo "$NOM" > /etc/hostname
+echo $NOM > /etc/hostname
 
 # Installation et mise à jour des paquets nécessaires:
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get upgrade -y
-apt-get install -y curl jq yq
+apt-get install -y curl jq yq sudo
 curl -fsSL https://get.docker.com | sh
 
 # Création du compte de l'équipe
-useradd "$NOM" -G docker -m -p "$MDP" -s /bin/bash -U
+useradd $NOM -G docker -m -p "$MDP" -s /bin/bash -U
 
-# Création des dossiers et des fichiers des défis
+# Création des dossiers des défis
 mkdir /root/defis
 mkdir "/home/$NOM/defis"
 

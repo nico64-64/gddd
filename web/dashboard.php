@@ -43,7 +43,7 @@
 		$nbre = 0;
 		foreach ($_SESSION['defis'] as $defi)
 		{
-			if (file_exists(str_replace("\"", "", $defi['path'] . $_SESSION['num_equipe'] . ".lock")))
+			if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_SESSION[num_equipe].lock"))
 			{$nbre++;}
 		}
 		return $nbre;
@@ -71,9 +71,9 @@
 			foreach ($liste_defis as $defi)
 			{
 				$defis[] = json_decode(shell_exec("yq . \"".getenv("RACINE_SERVEUR","..")."/defis/$categorie/$defi/description.yaml\""), true);
-				$defis[count($defis) - 1]['path'] = "\"".getenv("RACINE_SERVEUR","..")."/defis/$categorie/$defi/\"";
+				$defis[count($defis) - 1]['path'] = getenv("RACINE_SERVEUR","..") . "/defis/$categorie/$defi/";
 				
-				if (file_exists(str_replace("\"", "", $defis[count($defis) - 1]['path'] . $_SESSION['num_equipe'] . ".lock")) || file_exists(str_replace("\"", "", $defis[count($defis) - 1]['path'] . "all.lock")))
+				if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defis[count($defis) - 1]['path']) . ".$_SESSION[num_equipe].lock") || file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defis[count($defis) - 1]['path']) . ".all.lock"))
 				{$defis[count($defis) - 1]['statut'] = "occupe";}
 				else
 				{$defis[count($defis) - 1]['statut'] = "pret";}
@@ -92,7 +92,7 @@
 		{
 			$defi['path'] = getenv("RACINE_SERVEUR", "..") . $defi['repertoire'] . "/";
 			unset($defi['repertoire']);
-			if (file_exists(str_replace("\"", "", $defi['path'] . $_SESSION['num_equipe'] . ".lock")) || file_exists(str_replace("\"", "", $defi['path'] . "all.lock")))
+			if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defi['path']) . ".$_SESSION[num_equipe].lock") || file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defi['path']) . ".all.lock"))
 			{$defi['statut'] = "occupe";}
 			else
 			{$defi['statut'] = "pret";}
@@ -186,7 +186,6 @@
 			padding: 5px 10px;
 			border-radius: 8px;
 			text-decoration: none;
-			margin-left: auto;
 			user-select: none;
 			cursor: pointer;
 			box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.3);
@@ -195,6 +194,7 @@
 		a.demarrer
 		{
 			background-color: green;
+			margin-left: auto;
 		}
 		
 		a.arreter
@@ -210,6 +210,7 @@
 		.defi .txt-resolu
 		{
 			margin-left: auto;
+			text-align: right;
 		}
 		
 		.tag
@@ -322,7 +323,10 @@
 					if ($_SESSION['defis'][$compteur]['statut'] == "pret")
 					{echo "<a class=demarrer href=/dashboard.php?defi=$compteur>Démarrer</a></div>";}
 					else if ($_SESSION['defis'][$compteur]['statut'] == "occupe")
-					{echo "<a class=arreter href=/dashboard.php?defi=$compteur>Arrêter</a></div>";}
+					{
+						echo "<div class=txt-resolu>En ligne au port " . $_SESSION['defis'][$compteur]['port'] . " de l'adresse " . $_SESSION['defis'][$compteur]['statiques-dynamiques']['domaine'] . "</div>";
+						echo "<a class=arreter href=/dashboard.php?defi=$compteur>Arrêter</a></div>";
+					}
 					else
 					{echo "<div class=txt-resolu>Erreur: état inconnu</div>";}
 				}
@@ -367,13 +371,9 @@
 					}
 					else if (isset($_GET['demarre']))
 					{
-						if ($_SESSION['defis'][$_GET['demarre']]['statiques-dynamiques']['protocole'] == "SSH")
-						{$port = 2200 + $_SESSION['num_equipe'];}
-						else
-						{$port = 8000 + $_SESSION['num_equipe'];}
 						echo "<div id=header-modale><h2>" . $_SESSION['defis'][$_GET['demarre']]['titre'] . "</h2><a href=/dashboard.php id=x-modale>&times;</a></div>";
 						
-						echo "<p>Connectez-vous au port $port de " . $_SESSION['defis'][$_GET['demarre']]['statiques-dynamiques']['domaine'] . " par " . $_SESSION['defis'][$_GET['demarre']]['statiques-dynamiques']['protocole'] . ".</p>";
+						echo "<p>Connectez-vous au port " . $_SESSION['defis'][$_GET['demarre']]['port'] . " de " . $_SESSION['defis'][$_GET['demarre']]['statiques-dynamiques']['domaine'] . " par " . $_SESSION['defis'][$_GET['demarre']]['statiques-dynamiques']['protocole'] . ".</p>";
 						echo "<a class=bouton id=bouton-modale-ok onclick=reloadPostDemarrage()>Ok</a><div class=loading id=loading-modale style=\"display: none\"></div>";
 					}
 				?>
