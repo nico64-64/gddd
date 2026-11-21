@@ -54,7 +54,7 @@
 				echo "Défis barrés globalement (occurences de all.lock):\n";
 				foreach ($_SESSION['defis'] as $defi)
 				{
-					if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".all.lock"))
+					if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defi['path']) . ".all.lock"))
 					{echo $defi['titre'] . "\n";}
 				}
 			?></pre>
@@ -79,6 +79,8 @@
 		<details>
 			<?php phpinfo(); ?>
 		</details>
+		
+		<a class=bouton href=/dashboard.php>Retour au dashboard</a>
 	</page>
 	
 	<footer>

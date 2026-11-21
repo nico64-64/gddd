@@ -58,6 +58,8 @@
 	//Cette fonction reste disponible au cas où le json ne serait pas disponible et fournit exactement les mêmes fonctionnalités que la nouvelle, mais prend plusieurs secondes à s'éexécuter, contrairement à la nouvelle.
 	{
 		global $path_actuel;
+		if (isset($_SESSION['defis']))
+		{$anciens_defis = array_column($_SESSION['defis'], null, 'path');}
 		$defis = [];
 		$path_actuel = getenv("RACINE_SERVEUR","..")."/defis/";
 		$categories = scandir(getenv("RACINE_SERVEUR","..")."/defis");
@@ -74,7 +76,13 @@
 				$defis[count($defis) - 1]['path'] = getenv("RACINE_SERVEUR","..") . "/defis/$categorie/$defi/";
 				
 				if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defis[count($defis) - 1]['path']) . ".$_SESSION[num_equipe].lock") || file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defis[count($defis) - 1]['path']) . ".all.lock"))
-				{$defis[count($defis) - 1]['statut'] = "occupe";}
+				{
+					$defis[count($defis) - 1]['statut'] = "occupe";
+					if (isset($anciens_defis))
+					{$defis[count($defis) - 1]['port'] = $anciens_defis[$defis[count($defis) - 1]['path']]['port'];}
+					else
+					{$defis[count($defis) - 1]['port'] = -1;} //impossible de trouver le port, donc on met un placeholder, mais ça ne devrait jamais arriver anyway...
+				}
 				else
 				{$defis[count($defis) - 1]['statut'] = "pret";}
 			}
@@ -88,12 +96,21 @@
 	//Il s'agit d'une version plus rapide (et sans dépendance envers yq) de charger_defis(), mais qui nécessite une version plus récente du script d'installation de CTFd.
 	{
 		$defis = json_decode(file_get_contents(getenv("RACINE_SERVEUR", "..") . "/defis/deploiement/defis.json"), true);
+		if (isset($_SESSION['defis']))
+		{$anciens_defis = array_column($_SESSION['defis'], null, 'path');}
+		
 		foreach ($defis as &$defi)
 		{
 			$defi['path'] = getenv("RACINE_SERVEUR", "..") . $defi['repertoire'] . "/";
 			unset($defi['repertoire']);
 			if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defi['path']) . ".$_SESSION[num_equipe].lock") || file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defi['path']) . ".all.lock"))
-			{$defi['statut'] = "occupe";}
+			{
+				$defi['statut'] = "occupe";
+				if (isset($anciens_defis))
+				{$defi['port'] = $anciens_defis[$defi['path']]['port'];}
+				else
+				{$defi['port'] = -1;} //impossible de trouver le port, donc on met un placeholder, mais ça ne devrait jamais arriver anyway...
+			}
 			else
 			{$defi['statut'] = "pret";}
 		}
@@ -176,6 +193,12 @@
 		.defi h4
 		{
 			width: 30%;
+			flex-shrink: 0;
+		}
+		
+		.defi .valeur
+		{
+			white-space: nowrap;
 		}
 		
 		a.demarrer, a.arreter
@@ -189,6 +212,7 @@
 			user-select: none;
 			cursor: pointer;
 			box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.3);
+			flex-shrink: 0;
 		}
 		
 		a.demarrer
@@ -211,6 +235,7 @@
 		{
 			margin-left: auto;
 			text-align: right;
+			font-size: 14px;
 		}
 		
 		.tag
@@ -223,6 +248,7 @@
 			border-radius: 10px;
 			width: 100px;
 			text-align: center;
+			flex-shrink: 0;
 		}
 		
 		.non-resolu
@@ -336,7 +362,8 @@
 		<?php
 			if ($_SESSION['equipe'] == "admins")
 			{
-				echo "<details><summary>Détails de débogage</summary><pre>" . print_r($_SESSION['defis'], true) . "</pre></details>";
+				echo "<a class=bouton href=/panneauadmin.php>Panneau Admin</a>";
+				echo "<a class=bouton href=/admininfos.php>Infos Admin</a>";
 			}
 		?>
 		
