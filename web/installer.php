@@ -14,7 +14,7 @@
 		error_log("Je recommande plutôt d'utiliser le panneau admin...");
 		
 		//Charger les variables d'environnements
-		$env = file_get_contents(realpath("../env/.env"));
+		$env = file_get_contents(realpath("../.env"));
 		$lines = explode("\n",$env);
 
 		foreach($lines as $line){

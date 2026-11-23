@@ -128,7 +128,7 @@ for var in $(grep -oE "^[a-zA-Z0-9_\-]+=" "${cwd}/.env.exemple"); do
 	env_deploiement="${env_deploiement}$(eval "echo \"${var}\\\"\$${var//=/}\\\"\n\"")"
 done
 mkdir -p "${cwd}/env"
-printf "$env_deploiement" > "${cwd}/env/.env"
+printf "$env_deploiement" > "${cwd}/.env"
 
 
 # Vérification de la présence des dossiers et fichiers requis:
