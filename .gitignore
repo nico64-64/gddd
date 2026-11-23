@@ -8,3 +8,4 @@ web/*.jpg
 web/*.jpeg
 .env
 .env.deploiement
+lockfiles/*.lock

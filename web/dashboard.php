@@ -1,5 +1,16 @@
 <?php
-	//Attention, PHP cryptique, usages multiples et injection de fichiers.
+	/*  dashboard.php
+	 * ===============
+	 * Interface utilisateur principale de GDDD.
+	 * Cette page fournit aux participants du CTF un moyen d'instancier des défis déployés dynamiquement avec GDDD et de les arrêter.
+	 * Cette page permet aussi aux participants de voir quels défis ils ont et peuvent instancier ainsi que quelques autres informations potentiellement utiles.
+	 * Cette page est rechargée automatiquement à sa première visite, puis à chaque 5 minutes. Il est recommandé de forcer un rechargement complet en lui passant le paramètre GET reload=1 avant d'effectuer n'importe quelle action.
+	 * Le chargement complet peut prendre quelques temps si les défis sont lus directement depuis leur description.yaml plutôt que de defis.json. Assurez-vous d'utiliser la fonction appropriée.
+	 * Cette page, bien qu'accessible aux administrateurs du CTF, ne leur est pas d'une très grande utilité sauf pour recharger les défis si leur nombre a changé.
+	 */
+	
+	
+	//Attention: PHP cryptique, usages multiples et injection de fichiers.
 	
 	session_start();
 	
@@ -39,6 +50,8 @@
 	
 	
 	function nombre_instances ()
+	//Compte les instances de défi en train de rouler pour cette équipe.
+	//TODO: Compléter et vérifier cette fonction, ainsi que la logique qui devrait venir avec.
 	{
 		$nbre = 0;
 		foreach ($_SESSION['defis'] as $defi)
@@ -126,6 +139,7 @@
 		
 		if (!$_POST)
 		//Un petit finfinaud essaie d'accéder au portail sans se loguer
+		//(ou sa session a juste expiré :P)
 		{
 			http_response_code(418);
 			echo str_replace("ERR_CODE", "418 I'm a teapot", file_get_contents("erreur.html"));
@@ -138,6 +152,13 @@
 		{
 			http_response_code(401);
 			echo str_replace("ERR_CODE", "401 Unauthorized", file_get_contents("erreur.html"));
+			exit;
+		}
+		else if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/nologin.$_POST[num].lock"))
+		//Un participant bloqué par un admin essaie de se connecter
+		{
+			http_response_code(403);
+			echo str_replace("ERR_CODE", "403 Forbidden<br>Tu n'as présentement pas le droit de te connecter.", file_get_contents("erreur.html"));
 			exit;
 		}
 		else
@@ -363,7 +384,7 @@
 			if ($_SESSION['equipe'] == "admins")
 			{
 				echo "<a class=bouton href=/panneauadmin.php>Panneau Admin</a>";
-				echo "<a class=bouton href=/admininfos.php>Infos Admin</a>";
+				echo "<a class=bouton href=/admininfos.php>Infos Admins</a>";
 			}
 		?>
 		

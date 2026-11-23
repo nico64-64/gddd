@@ -1,4 +1,12 @@
 <?php
+	/*  admininfos.php
+	 * ==================
+	 * Affichage des différentes informations enregistrées par GDDD en format brut.
+	 * Cette page fournit aux administrateurs du CTF un moyen de consulter pas mal toutes les données utilisées par GDDD sous leur format brut (souvent du JSON) dans une seule page HTML.
+	 * Cette page n'est accessible qu'à l'équipe des administrateurs du CTF.
+	 * Le formattage bizarre est causé par phpinfo() qui semble modifier le CSS de la page.
+	 */
+	
 	session_start();
 	
 	//Charger les variables d'environnements

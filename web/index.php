@@ -1,4 +1,14 @@
 <?php
+	/*  index.php
+	 * ===========
+	 * Portail de connexion à GDDD.
+	 * Cette page permet à n'importe quel utilisateur de s'authentifier pour accéder à GDDD. La véritable logique serveur d'authentification se fait par contre dans dashboard.php.
+	 * Il s'agit de la seule véritable page qui est accessible sans authentification.
+	 * L'authentification est notée par la définition de $_SESSION['equipe'] (associé au nom de l'équipe connecté).
+	 * Il peut y avoir plusieurs sessions en même temps pour une seule équipe.
+	 * Si l'utilisateur est déjà authentifié, cette page le redirige plutôt vers le tableau de bord (dashboard.php).
+	 */
+	
 	session_start();
 
 	//Charger les variables d'environnements

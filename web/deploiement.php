@@ -1,5 +1,14 @@
 <?php
-	session_start();
+	/*  deploiement.php
+	 * =================
+	 * API pour démarrer ou arrêter une instance d'un défi pour une équipe.
+	 * Ce fichier ne fournit aucune interface visuelle.
+	 * Ce fichier doit être appelé avec les paramètres type ("demarrer" ou "arreter") et defi (numéro de défi) en paramètres GET.
+	 * La manière la plus simple de l'utiliser est de passer par le tableau de bord de GDDD.
+	 * Ce script ne doit être utilisé que par les participants du CTF. Les administrateurs devrait plutôt utiliser cmd.php via le panneau d'administration de GDDD.
+	 */
+	 
+	 session_start();
 	
 	//Charger les variables d'environnements
 	$env = file_get_contents(realpath("../env/.env"));
@@ -48,6 +57,12 @@
 	header('Pragma: no-cache');
 	header('Expires: 0');
 	header('Connection: keep-alive');
+	
+	if ($_SESSION['equipe'] == "admins")
+	{
+		repondre(str_replace("ERR_CODE", "403 Forbidden", file_get_contents("erreur.html")), 403);
+		exit;
+	}
 	
 	
 	if ($_GET['type'] == "demarrer")
