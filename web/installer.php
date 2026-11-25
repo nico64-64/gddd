@@ -32,8 +32,8 @@
 		}
 		
 		//Lecture des fichiers de configuration
-		$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR","..")."/equipes.json"), true)['equipes_ctfd'];
-		$machines = json_decode(file_get_contents(getenv("RACINE_SERVEUR", "..") . "/machines.json"), true)['defis-dynamiques'];
+		$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR")."/equipes.json"), true)['equipes_ctfd'];
+		$machines = json_decode(file_get_contents(getenv("RACINE_SERVEUR") . "/machines.json"), true)['defis-dynamiques'];
 	}
 	else
 	{
@@ -65,16 +65,16 @@
 			if ($viaCMD)
 			{repondre("Configuration de " . $machines[$i]['ip'] . " pour l'équipe $i (" . $equipes[$i]['nom'] . ")...", 102);}
 			error_log("Équipe $i:\nConfiguration de la VM...");
-			shell_exec("scp " . getenv("RACINE_SERVEUR", "..") . "/configVM.sh" . " scp://root@" . $machines[$i]['ip'] . "/configVM.sh");
+			shell_exec("scp " . getenv("RACINE_SERVEUR") . "/configVM.sh" . " scp://root@" . $machines[$i]['ip'] . "/configVM.sh");
 			shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"chmod +x /root/configVM.sh\"");
 			shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"NOM='" . $equipes[$i]['nom'] . "' MDP='" . $equipes[$i]['mdp'] . "' /root/configVM.sh &> /root/configVM.log\"");
-			shell_exec("scp " . getenv("RACINE_SERVEUR", "..") . "/gererDefi.sh" . " scp://root@" . $machines[$i]['ip'] . "//home/" . $equipes[$i]['nom'] . "/gererDefi.sh");
+			shell_exec("scp " . getenv("RACINE_SERVEUR") . "/gererDefi.sh" . " scp://root@" . $machines[$i]['ip'] . "//home/" . $equipes[$i]['nom'] . "/gererDefi.sh");
 			shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"chmod +x /home/" . $equipes[$i]['nom'] . "/gererDefi.sh\"");
 			
 			if ($viaCMD)
 			{repondre("Envoi des défis sur " . $machines[$i]['ip'] . " pour l'équipe $i (" . $equipes[$i]['nom'] . ")...", 102);}
 			error_log("Machine configurée. Envoi des défis...");
-			shell_exec("scp " . getenv("RACINE_SERVEUR", "..") . "/configDefis.sh" . " scp://root@" . $machines[$i]['ip'] . "/configDefis.sh");
+			shell_exec("scp " . getenv("RACINE_SERVEUR") . "/configDefis.sh" . " scp://root@" . $machines[$i]['ip'] . "/configDefis.sh");
 			shell_exec("ssh root@" . $machines[$i]['ip'] . " -t \"chmod +x /root/configDefis.sh\"");
 			foreach ($_SESSION['defis'] as $defi)
 			{shell_exec("scp -r $defi[path] scp://root@" . $machines[$i]['ip'] . "/defis/\$(basename '$defi[path]')");}

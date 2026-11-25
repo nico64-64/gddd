@@ -1,7 +1,7 @@
 FROM nginx:latest
 
 RUN apt-get update
-RUN apt-get install -y php-fpm yq
+RUN apt-get install -y php-fpm yq openssh-client sshpass
 
 RUN mkdir -pv /var/www/{web,defis}
 RUN sed -i 's/listen.owner = www-data/listen.owner = nginx/g' /etc/php/8.4/fpm/pool.d/www.conf

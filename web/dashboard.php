@@ -56,7 +56,7 @@
 		$nbre = 0;
 		foreach ($_SESSION['defis'] as $defi)
 		{
-			if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_SESSION[num_equipe].lock"))
+			if (file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_SESSION[num_equipe].lock"))
 			{$nbre++;}
 		}
 		return $nbre;
@@ -74,21 +74,21 @@
 		if (isset($_SESSION['defis']))
 		{$anciens_defis = array_column($_SESSION['defis'], null, 'path');}
 		$defis = [];
-		$path_actuel = getenv("RACINE_SERVEUR","..")."/defis/";
-		$categories = scandir(getenv("RACINE_SERVEUR","..")."/defis");
+		$path_actuel = getenv("RACINE_SERVEUR")."/defis/";
+		$categories = scandir(getenv("RACINE_SERVEUR")."/defis");
 		$categories = array_filter($categories, "filtre_dossiers");
 		foreach ($categories as $categorie)
 		{
-			$path_actuel = getenv("RACINE_SERVEUR","..")."/defis/$categorie/";
-			$liste_defis = scandir(getenv("RACINE_SERVEUR","..")."/defis/$categorie/");
+			$path_actuel = getenv("RACINE_SERVEUR")."/defis/$categorie/";
+			$liste_defis = scandir(getenv("RACINE_SERVEUR")."/defis/$categorie/");
 			$liste_defis = array_filter($liste_defis, "filtre_dossiers");
 			
 			foreach ($liste_defis as $defi)
 			{
-				$defis[] = json_decode(shell_exec("yq . \"".getenv("RACINE_SERVEUR","..")."/defis/$categorie/$defi/description.yaml\""), true);
-				$defis[count($defis) - 1]['path'] = getenv("RACINE_SERVEUR","..") . "/defis/$categorie/$defi/";
+				$defis[] = json_decode(shell_exec("yq . \"".getenv("RACINE_SERVEUR")."/defis/$categorie/$defi/description.yaml\""), true);
+				$defis[count($defis) - 1]['path'] = getenv("RACINE_SERVEUR") . "/defis/$categorie/$defi/";
 				
-				if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defis[count($defis) - 1]['path']) . ".$_SESSION[num_equipe].lock") || file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defis[count($defis) - 1]['path']) . ".all.lock"))
+				if (file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($defis[count($defis) - 1]['path']) . ".$_SESSION[num_equipe].lock") || file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($defis[count($defis) - 1]['path']) . ".all.lock"))
 				{
 					$defis[count($defis) - 1]['statut'] = "occupe";
 					if (isset($anciens_defis))
@@ -108,15 +108,15 @@
 	//Charge les descriptions de défis contenues dans defis.json de tous les défis déployés par GDDDvD dans un array renvoyé à la fin.
 	//Il s'agit d'une version plus rapide (et sans dépendance envers yq) de charger_defis(), mais qui nécessite une version plus récente du script d'installation de CTFd.
 	{
-		$defis = json_decode(file_get_contents(getenv("RACINE_SERVEUR", "..") . "/defis/deploiement/defis.json"), true);
+		$defis = json_decode(file_get_contents(getenv("RACINE_SERVEUR") . "/defis/deploiement/defis.json"), true);
 		if (isset($_SESSION['defis']))
 		{$anciens_defis = array_column($_SESSION['defis'], null, 'path');}
 		
 		foreach ($defis as &$defi)
 		{
-			$defi['path'] = getenv("RACINE_SERVEUR", "..") . $defi['repertoire'] . "/";
+			$defi['path'] = getenv("RACINE_SERVEUR") . $defi['repertoire'] . "/";
 			unset($defi['repertoire']);
-			if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defi['path']) . ".$_SESSION[num_equipe].lock") || file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defi['path']) . ".all.lock"))
+			if (file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($defi['path']) . ".$_SESSION[num_equipe].lock") || file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($defi['path']) . ".all.lock"))
 			{
 				$defi['statut'] = "occupe";
 				if (isset($anciens_defis))
@@ -135,7 +135,7 @@
 	if (!isset($_SESSION['equipe']))
 	//Le participant n'a pas encore été identifié
 	{
-		$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR","..")."/equipes.json"), true)['equipes_ctfd'];
+		$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR")."/equipes.json"), true)['equipes_ctfd'];
 		
 		if (!$_POST)
 		//Un petit finfinaud essaie d'accéder au portail sans se loguer
@@ -154,7 +154,7 @@
 			echo str_replace("ERR_CODE", "401 Unauthorized", file_get_contents("erreur.html"));
 			exit;
 		}
-		else if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/nologin.$_POST[num].lock"))
+		else if (file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/nologin.$_POST[num].lock"))
 		//Un participant bloqué par un admin essaie de se connecter
 		{
 			http_response_code(403);
