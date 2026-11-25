@@ -228,6 +228,7 @@
 		
 		<form id=cmd-globale action=/cmd.php method=get>
 			<h3>Actions globales</h3>
+			<p>Attention!<br>Ces actions ont un fort potentiel destructeur et ne devraient pas être exécutées durant le CTF.</p>
 			<div>
 				<select name=cmd>
 					<option value=installer>Configurer les VMs et installer les défis</option>
@@ -253,7 +254,7 @@
 	</page>
 	
 	<footer>
-		<p><strong>GDDD vD0.4</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
+		<p><strong>GDDD vD0.5</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
 	</footer>
 	
 	<script>

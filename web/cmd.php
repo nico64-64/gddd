@@ -10,7 +10,7 @@
 	
 	
 	session_start();
-	require_once "SSE.php";
+	require_once "outils.php";
 	
 	
 	//Charger les variables d'environnements
@@ -159,6 +159,7 @@
 				if (!isset($machine['est_admin']) || $machine['est_admin'] != true)
 				{shell_exec("ssh root@$machine[ip] -t \"shutdown now\"");}
 			}
+			shell_exec("rm " . getenv("RACINE_SERVEUR") . "/lockfiles/*.lock");
 			//TODO: Plus de code de sauvegarde et de fermeture à venir ici...
 			repondre("terminé", 204);
 			break;

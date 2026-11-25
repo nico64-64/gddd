@@ -10,7 +10,7 @@ for arg in "$@"; do
 	in
 		--help | -h)
 			echo -e "Utilitaire de configuration de GDDD (version D).\n"
-			echo -e "Utilisez comme suit:\n./config.sh [ -h | -v ] [ -c ] [ -f .env ] [ -P port ] [ -P minimum ] [ -d defis/ ] [ -e equipes.json -m machines.json ] [ -r /racine ] [ -n nom -L ctfd.ctf ] [ -i icone.svg -l logo.png ]\n"
+			echo -e "Utilisez comme suit:\n./config.sh [ -h | -v ] [ -c ] [ -f .env ] [ -P port ] [ -P minimum ] [ -d defis/ ] [ -e equipes.json -m machines.json ] [ -r /racine ] [ -M 1 ] [ -n nom -L ctfd.ctf ] [ -i icone.svg -l logo.png ]\n"
 			echo    "-h Affiche ce message d'aide, puis quitte sans rien faire"
 			echo    "-v Affiche le numéro de version de ce script, puis quitte sans rien faire"
 			echo    "-c Copie les fichiers nécessaires au lieu de créer des symlinks"
@@ -21,6 +21,7 @@ for arg in "$@"; do
 			echo    "-l Indique que le prochain argument sera le logo du CTF (image rectangulaire en format paysage)"
 			echo    "-L Indique que le prochain argument sera le lien vers l'instance de CTFd de l'évènement"
 			echo	"-m Indique que le prochain argument sera le fichier JSON où sont enregistrées les machines où devront être déployés les défis"
+			echo	"-M Indique que le prochain argument sera le nombre maximal d'instances de défi exécutées simultanément par équipe, tous défis confondus"
 			echo    "-n Indique que le prochain argument sera le nom du CTF (entre guillemets s'il contient des espaces)"
 			echo 	"-p Indique que le prochain argument sera le numéro de port utilisé pour déployer GDDD"
 			echo    "-P Indique que le prochain argument sera le numéro de port minimal utilisé par GDDD pour déployer les défis dynamiques"
@@ -95,6 +96,10 @@ do
 		
 		-m)
 			aLire=FICHIER_MACHINES
+			;;
+		
+		-M)
+			aLire=MAX_INSTANCES
 			;;
 		
 		-n)

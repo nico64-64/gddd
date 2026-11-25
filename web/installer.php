@@ -114,7 +114,7 @@
 	</page>
 	
 	<footer>
-		<p><strong>GDDD vD0.4</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
+		<p><strong>GDDD vD0.5</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
 	</footer>
 </body>
 </html>

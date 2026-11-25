@@ -25,6 +25,12 @@
 	$lien_ctfd = getenv("LIEN_CTFD");
 	$nom_ctf = getenv("NOM_CTF");
 	
+	if (isset($_GET['logout']))
+	{
+		session_unset();
+		header('Location: /index.php', true, 302);
+		exit;
+	}
 	if (isset($_SESSION['equipe']))
 	{
 		header('Location: /dashboard.php', true, 302);
@@ -118,7 +124,7 @@
 	</page>
 	
 	<footer>
-		<p><strong>GDDD vD0.4</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
+		<p><strong>GDDD vD0.5</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
 	</footer>
 </body>
 </html>
