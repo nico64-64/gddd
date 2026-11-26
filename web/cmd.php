@@ -10,7 +10,7 @@
 	
 	
 	session_start();
-	require_once "SSE.php";
+	require_once "outils.php";
 	
 	
 	//Charger les variables d'environnements
@@ -39,8 +39,8 @@
 	}
 	
 	//Lecture des informations nécessaires
-	$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR","..")."/equipes.json"), true)['equipes_ctfd'];
-	$machines = json_decode(file_get_contents(getenv("RACINE_SERVEUR", "..") . "/machines.json"), true)['defis-dynamiques'];
+	$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR")."/equipes.json"), true)['equipes_ctfd'];
+	$machines = json_decode(file_get_contents(getenv("RACINE_SERVEUR") . "/machines.json"), true)['defis-dynamiques'];
 	
 	
 	//Configuration SSE:
@@ -64,10 +64,10 @@
 		case "barrer":
 			if (!isset($_GET['defi']) || !isset($_GET['equipe']))
 			{repondre(str_replace("ERR_CODE", "400 Bad Request", file_get_contents("erreur.html")), 400);}
-			else if (!file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_GET[equipe].lock"))
+			else if (!file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_GET[equipe].lock"))
 			{
 				repondre("supression...", 100);
-				if (!file_put_contents(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_GET[equipe].lock", "...", LOCK_EX))
+				if (!file_put_contents(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_GET[equipe].lock", "...", LOCK_EX))
 				{repondre(str_replace("ERR_CODE", "409 Conflict", file_get_contents("erreur.html")), 409);}
 				else
 				{repondre("terminé", 204);}
@@ -79,10 +79,10 @@
 		case "debarrer":
 			if (!isset($_GET['defi']) || !isset($_GET['equipe']))
 			{repondre(str_replace("ERR_CODE", "400 Bad Request", file_get_contents("erreur.html")), 400);}
-			else if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_GET[equipe].lock"))
+			else if (file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_GET[equipe].lock"))
 			{
 				repondre("supression...", 100);
-				unlink(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_GET[equipe].lock");
+				unlink(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_GET[equipe].lock");
 				repondre("terminé", 204);
 			}
 			else
@@ -94,12 +94,12 @@
 			{repondre(str_replace("ERR_CODE", "400 Bad Request", file_get_contents("erreur.html")), 400);}
 			else if ($equipes[$_GET['equipe']]['nom'] == "admins")
 			{repondre(str_replace("ERR_CODE", "403 Forbidden", file_get_contents("erreur.html")), 403);}
-			else if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_GET[equipe].lock"))
+			else if (file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_GET[equipe].lock"))
 			{
 				repondre("fermeture...", 100);
 				shell_exec("ssh root@" . $machines[$_GET['equipe']]['ip'] . " -t \"NOM='" . $equipes[$_GET['equipe']]['nom'] . "' DEFI='" . basename($_SESSION['defis'][$_GET['defi']]['path']) . "' PORT=0 /home/" . $equipes[$_GET['equipe']]['nom'] . "/gererDefi.sh -a &> /home/" . $equipes[$_GET['equipe']]['nom'] . "/gererDefi.log\""); //je me fout du port vu qu'on fait juste détruire l'instance
 				sleep(1); //Laisse un peu de temps pour être sûr que tout est bien fermé
-				unlink(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_GET[equipe].lock");
+				unlink(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_GET[equipe].lock");
 				repondre("terminé", 204);
 			}
 			else
@@ -111,10 +111,10 @@
 			{repondre(str_replace("ERR_CODE", "400 Bad Request", file_get_contents("erreur.html")), 400);}
 			else if ($equipes[$_GET['equipe']]['nom'] == "admins")
 			{repondre(str_replace("ERR_CODE", "403 Forbidden", file_get_contents("erreur.html")), 403);}
-			else if (!file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/nologin.$_GET[equipe].lock"))
+			else if (!file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/nologin.$_GET[equipe].lock"))
 			{
 				repondre("bloquage...", 100);
-				if (!file_put_contents(getenv("RACINE_SERVEUR", "..") . "/lockfiles/nologin.$_GET[equipe].lock", "...", LOCK_EX))
+				if (!file_put_contents(getenv("RACINE_SERVEUR") . "/lockfiles/nologin.$_GET[equipe].lock", "...", LOCK_EX))
 				{repondre(str_replace("ERR_CODE", "409 Conflict", file_get_contents("erreur.html")), 409);}
 				else
 				{repondre("terminé", 204);}
@@ -128,10 +128,10 @@
 			{repondre(str_replace("ERR_CODE", "400 Bad Request", file_get_contents("erreur.html")), 400);}
 			else if ($equipes[$_GET['equipe']]['nom'] == "admins")
 			{repondre(str_replace("ERR_CODE", "403 Forbidden", file_get_contents("erreur.html")), 403);}
-			else if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/nologin.$_GET[equipe].lock"))
+			else if (file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/nologin.$_GET[equipe].lock"))
 			{
 				repondre("débloquage...", 100);
-				unlink(getenv("RACINE_SERVEUR", "..") . "/lockfiles/nologin.$_GET[equipe].lock");
+				unlink(getenv("RACINE_SERVEUR") . "/lockfiles/nologin.$_GET[equipe].lock");
 				repondre("terminé", 204);
 			}
 			else
@@ -159,6 +159,7 @@
 				if (!isset($machine['est_admin']) || $machine['est_admin'] != true)
 				{shell_exec("ssh root@$machine[ip] -t \"shutdown now\"");}
 			}
+			shell_exec("rm " . getenv("RACINE_SERVEUR") . "/lockfiles/*.lock");
 			//TODO: Plus de code de sauvegarde et de fermeture à venir ici...
 			repondre("terminé", 204);
 			break;

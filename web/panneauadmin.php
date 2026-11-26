@@ -26,8 +26,8 @@
 		exit;
 	}
 	
-	$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR","..")."/equipes.json"), true)['equipes_ctfd'];
-	$machines = json_decode(file_get_contents(getenv("RACINE_SERVEUR", "..") . "/machines.json"), true)['defis-dynamiques'];
+	$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR")."/equipes.json"), true)['equipes_ctfd'];
+	$machines = json_decode(file_get_contents(getenv("RACINE_SERVEUR") . "/machines.json"), true)['defis-dynamiques'];
 ?>
 
 <!DOCTYPE html>
@@ -156,7 +156,7 @@
 			{
 				if ($equipes[$i]['nom'] == "admins")
 				{echo "<td style='background-color: #FFFB96'>Root</td>";}
-				else if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/nologin.$i.lock"))
+				else if (file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/nologin.$i.lock"))
 				{echo "<td class=rouge>Bloqué</td>";}
 				else
 				{echo "<td>Possible</td>";}
@@ -168,9 +168,9 @@
 				echo "<tr>\n<td>$defi[titre]</td>";
 				for ($i = 0; $i < count($equipes); $i++)
 				{
-					if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defi['path']) . ".$i.lock"))
+					if (file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($defi['path']) . ".$i.lock"))
 					{echo "<td class=vert>Démarré</td>";}
-					else if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defi['path']) . ".all.lock"))
+					else if (file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($defi['path']) . ".all.lock"))
 					{echo "<td class=rouge>Barré</td>";}
 					else
 					{echo "<td>Arrêté</td>";}
@@ -228,6 +228,7 @@
 		
 		<form id=cmd-globale action=/cmd.php method=get>
 			<h3>Actions globales</h3>
+			<p>Attention!<br>Ces actions ont un fort potentiel destructeur et ne devraient pas être exécutées durant le CTF.</p>
 			<div>
 				<select name=cmd>
 					<option value=installer>Configurer les VMs et installer les défis</option>
@@ -253,7 +254,7 @@
 	</page>
 	
 	<footer>
-		<p><strong>GDDD vD0.4</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
+		<p><strong>GDDD vD0.5</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
 	</footer>
 	
 	<script>

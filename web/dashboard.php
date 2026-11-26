@@ -13,6 +13,7 @@
 	//Attention: PHP cryptique, usages multiples et injection de fichiers.
 	
 	session_start();
+	require_once "outils.php";
 	
 	//Charger les variables d'environnements
 	$env = file_get_contents(realpath("../.env"));
@@ -23,119 +24,13 @@
 		if(isset($matches[2])){ 
 			putenv(preg_replace("/\"$/","", preg_replace("/(^[a-zA-Z0-9_\-]+=)\"/m","$1",trim($line)))); 
 		}
-	} 
-	
-	function filtre_dossiers ($dossier)
-	//Filtre un array pour n'y conserver que les valeurs qui sont des dossiers dans $path_actuel (variable globale).
-	//À utiliser comme callback avec array_filter().
-	// !! FONCTION DÉPRÉCIÉE !!
-	//Cette fonction est seulement utilisée par charger_defis(), qui est dépréciée.
-	{
-		global $path_actuel;
-		if ($dossier == "." || $dossier == "..")
-		{return false;}
-		return is_dir($path_actuel . $dossier);
-	}
-	
-	
-	function filtre_defis ($defi)
-	//Filtre un array pour n'y conserver que les défis qui sont visibles et dynamiques.
-	//À utiliser comme callback avec array_filter().
-	{
-		if ($defi['type'] == "dynamique" && $defi['etat'] == "visible")
-		{return true;}
-		else
-		{return false;}
-	}
-	
-	
-	function nombre_instances ()
-	//Compte les instances de défi en train de rouler pour cette équipe.
-	//TODO: Compléter et vérifier cette fonction, ainsi que la logique qui devrait venir avec.
-	{
-		$nbre = 0;
-		foreach ($_SESSION['defis'] as $defi)
-		{
-			if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_SESSION[num_equipe].lock"))
-			{$nbre++;}
-		}
-		return $nbre;
-	}
-	
-	
-	function charger_defis ()
-	//Charge toutes les descriptions.yaml des défis déployées par GDDDvD dans un array renvoyé à la fin.
-	//Cette fonction prend du temps à s'éexécuter parce qu'elle entre dans tous les dossiers de défis.
-	// !! FONCTION DÉPRÉCIÉE !!
-	//Utiliser plutôt charger_defis_json() pour lire le fichier JSON généré par le script de lancement de CTFd amalgamant l'ensemble des descriptions.yaml.
-	//Cette fonction reste disponible au cas où le json ne serait pas disponible et fournit exactement les mêmes fonctionnalités que la nouvelle, mais prend plusieurs secondes à s'éexécuter, contrairement à la nouvelle.
-	{
-		global $path_actuel;
-		if (isset($_SESSION['defis']))
-		{$anciens_defis = array_column($_SESSION['defis'], null, 'path');}
-		$defis = [];
-		$path_actuel = getenv("RACINE_SERVEUR","..")."/defis/";
-		$categories = scandir(getenv("RACINE_SERVEUR","..")."/defis");
-		$categories = array_filter($categories, "filtre_dossiers");
-		foreach ($categories as $categorie)
-		{
-			$path_actuel = getenv("RACINE_SERVEUR","..")."/defis/$categorie/";
-			$liste_defis = scandir(getenv("RACINE_SERVEUR","..")."/defis/$categorie/");
-			$liste_defis = array_filter($liste_defis, "filtre_dossiers");
-			
-			foreach ($liste_defis as $defi)
-			{
-				$defis[] = json_decode(shell_exec("yq . \"".getenv("RACINE_SERVEUR","..")."/defis/$categorie/$defi/description.yaml\""), true);
-				$defis[count($defis) - 1]['path'] = getenv("RACINE_SERVEUR","..") . "/defis/$categorie/$defi/";
-				
-				if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defis[count($defis) - 1]['path']) . ".$_SESSION[num_equipe].lock") || file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defis[count($defis) - 1]['path']) . ".all.lock"))
-				{
-					$defis[count($defis) - 1]['statut'] = "occupe";
-					if (isset($anciens_defis))
-					{$defis[count($defis) - 1]['port'] = $anciens_defis[$defis[count($defis) - 1]['path']]['port'];}
-					else
-					{$defis[count($defis) - 1]['port'] = -1;} //impossible de trouver le port, donc on met un placeholder, mais ça ne devrait jamais arriver anyway...
-				}
-				else
-				{$defis[count($defis) - 1]['statut'] = "pret";}
-			}
-		}
-		return array_values(array_filter($defis, "filtre_defis"));
-	}
-	
-	
-	function charger_defis_json ()
-	//Charge les descriptions de défis contenues dans defis.json de tous les défis déployés par GDDDvD dans un array renvoyé à la fin.
-	//Il s'agit d'une version plus rapide (et sans dépendance envers yq) de charger_defis(), mais qui nécessite une version plus récente du script d'installation de CTFd.
-	{
-		$defis = json_decode(file_get_contents(getenv("RACINE_SERVEUR", "..") . "/defis/deploiement/defis.json"), true);
-		if (isset($_SESSION['defis']))
-		{$anciens_defis = array_column($_SESSION['defis'], null, 'path');}
-		
-		foreach ($defis as &$defi)
-		{
-			$defi['path'] = getenv("RACINE_SERVEUR", "..") . $defi['repertoire'] . "/";
-			unset($defi['repertoire']);
-			if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defi['path']) . ".$_SESSION[num_equipe].lock") || file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defi['path']) . ".all.lock"))
-			{
-				$defi['statut'] = "occupe";
-				if (isset($anciens_defis))
-				{$defi['port'] = $anciens_defis[$defi['path']]['port'];}
-				else
-				{$defi['port'] = -1;} //impossible de trouver le port, donc on met un placeholder, mais ça ne devrait jamais arriver anyway...
-			}
-			else
-			{$defi['statut'] = "pret";}
-		}
-		unset($defi); //puisqu'utilisé directement (par référence) dans la foreach loop
-		return array_values(array_filter($defis, "filtre_defis"));
 	}
 	
 	
 	if (!isset($_SESSION['equipe']))
 	//Le participant n'a pas encore été identifié
 	{
-		$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR","..")."/equipes.json"), true)['equipes_ctfd'];
+		$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR")."/equipes.json"), true)['equipes_ctfd'];
 		
 		if (!$_POST)
 		//Un petit finfinaud essaie d'accéder au portail sans se loguer
@@ -154,7 +49,7 @@
 			echo str_replace("ERR_CODE", "401 Unauthorized", file_get_contents("erreur.html"));
 			exit;
 		}
-		else if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/nologin.$_POST[num].lock"))
+		else if (file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/nologin.$_POST[num].lock"))
 		//Un participant bloqué par un admin essaie de se connecter
 		{
 			http_response_code(403);
@@ -374,8 +269,12 @@
 						echo "<div class=txt-resolu>En ligne au port " . $_SESSION['defis'][$compteur]['port'] . " de l'adresse " . $_SESSION['defis'][$compteur]['statiques-dynamiques']['domaine'] . "</div>";
 						echo "<a class=arreter href=/dashboard.php?defi=$compteur>Arrêter</a></div>";
 					}
+					else if ($_SESSION['defis'][$compteur]['statut'] == "barre")
+					{echo "<div class=txt-resolu>Présentement indisponible</div></div>";}
+					else if ($_SESSION['defis'][$compteur]['statut'] == "depend_de")
+					{echo "<div class=txt-resolu>TODO dépendance</div></div>";}
 					else
-					{echo "<div class=txt-resolu>Erreur: état inconnu</div>";}
+					{echo "<div class=txt-resolu>Erreur: état inconnu</div></div>";}
 				}
 			?>
 		</div>
@@ -386,6 +285,7 @@
 				echo "<a class=bouton href=/panneauadmin.php>Panneau Admin</a>";
 				echo "<a class=bouton href=/admininfos.php>Infos Admins</a>";
 			}
+			echo "<a class=bouton href=/index.php?logout=1>Déconnexion</a>"
 		?>
 		
 		<div id=conteneur-modale>
@@ -398,10 +298,19 @@
 						if ($_SESSION['defis'][$_GET['defi']]['statut'] == "pret")
 						//défi à démarrer
 						{
-							
-							echo "<p style=\"text-align: left\" id=msg-modale>" . str_replace("\n", "<br>", $_SESSION['defis'][$_GET['defi']]['description']) . "</p>";
-							echo "<a class=bouton id=bouton-modale onclick=demarrerDefi()>Démarrer le défi</a>";
-							echo "<div class=loading id=loading-modale style=\"display: none\"></div>";
+							error_log(nombre_instances() . " instances");
+							if (nombre_instances() >= getenv("MAX_INSTANCES"))
+							{
+								echo "<p>Vous ne pouvez pas démarrer ce défi, car votre limite d'instances dynamiques (" . getenv("MAX_INSTANCES") . ") a été atteinte.</p>";
+								echo "<p>Arrêtez une instance présentement en exécution pour pouvoir démarrer ce défi.</p>";
+								echo "<p>En cas de problème, allez voir un admin.</p>";
+							}
+							else
+							{
+								echo "<p style=\"text-align: left\" id=msg-modale>" . str_replace("\n", "<br>", $_SESSION['defis'][$_GET['defi']]['description']) . "</p>";
+								echo "<a class=bouton id=bouton-modale onclick=demarrerDefi()>Démarrer le défi</a>";
+								echo "<div class=loading id=loading-modale style=\"display: none\"></div>";
+							}
 						}
 						else if ($_SESSION['defis'][$_GET['defi']]['statut'] == "occupe")
 						//défi à arrêter
@@ -430,7 +339,7 @@
 	</page>
 	
 	<footer>
-		<p><strong>GDDD vD0.4</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
+		<p><strong>GDDD vD0.5</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
 	</footer>
 	
 	<script>

@@ -10,7 +10,7 @@ for arg in "$@"; do
 	in
 		--help | -h)
 			echo -e "Utilitaire de configuration de GDDD (version D).\n"
-			echo -e "Utilisez comme suit:\n./config.sh [ -h | -v ] [ -c ] [ -f .env ] [ -p port ] [ -d defis/ ] [ -e equipes.json -m machines.json ] [ -r /racine ] [ -n nom -L ctfd.ctf ] [ -i icone.svg -l logo.png ]\n"
+			echo -e "Utilisez comme suit:\n./config.sh [ -h | -v ] [ -c ] [ -f .env ] [ -P port ] [ -P minimum ] [ -d defis/ ] [ -e equipes.json -m machines.json ] [ -r /racine ] [ -M 1 ] [ -n nom -L ctfd.ctf ] [ -i icone.svg -l logo.png ]\n"
 			echo    "-h Affiche ce message d'aide, puis quitte sans rien faire"
 			echo    "-v Affiche le numéro de version de ce script, puis quitte sans rien faire"
 			echo    "-c Copie les fichiers nécessaires au lieu de créer des symlinks"
@@ -21,8 +21,10 @@ for arg in "$@"; do
 			echo    "-l Indique que le prochain argument sera le logo du CTF (image rectangulaire en format paysage)"
 			echo    "-L Indique que le prochain argument sera le lien vers l'instance de CTFd de l'évènement"
 			echo	"-m Indique que le prochain argument sera le fichier JSON où sont enregistrées les machines où devront être déployés les défis"
+			echo	"-M Indique que le prochain argument sera le nombre maximal d'instances de défi exécutées simultanément par équipe, tous défis confondus"
 			echo    "-n Indique que le prochain argument sera le nom du CTF (entre guillemets s'il contient des espaces)"
-			echo    "-p Indique que le prochain argument sera le numéro de port utilisé par GDDD"
+			echo 	"-p Indique que le prochain argument sera le numéro de port utilisé pour déployer GDDD"
+			echo    "-P Indique que le prochain argument sera le numéro de port minimal utilisé par GDDD pour déployer les défis dynamiques"
 			echo	"-r Indique que le prochain argument sera le dossier racine de GDDD, relatif à celui du serveur HTTP"
 			echo    "--pwd     Indique le dossier contenant le CTF (Project Working Directory)"
 			echo    "--domaine Indique le nom de domaine global du CTF"
@@ -36,15 +38,19 @@ for arg in "$@"; do
 			echo "Compatible avec GDDD version D (0.2 et plus récent)"
 			exit
 			;;
+		
 		-f)
 			aLire=fichier_env
 			;;
+		
 		--pwd)
 			aLire=_PWD
 			;;
+		
 		--domaine)
 			aLire=DOMAINE_GLOBAL
 			;;
+		
 		*)
 			if [[ -v aLire ]]
 			then
@@ -92,21 +98,31 @@ do
 			aLire=FICHIER_MACHINES
 			;;
 		
+		-M)
+			aLire=MAX_INSTANCES
+			;;
+		
 		-n)
 			aLire=NOM_CTF
 			;;
+			
 		-p)
 			aLire=PORT
+			;;
+		
+		-P)
+			aLire=PORT_MINIMUM
 			;;
 		
 		-r)
 			aLire=RACINE_SERVEUR
 			;;
 		
-		-f | --help | -h | --version | -v | --pwd | --domaine)
-			#TODO: Skipper les valeurs de --pwd, --domaine et --env aussi (BUG)
+		-f | --pwd | --domaine)
+			#TODO: Skipper les valeurs de --pwd, --domaine et -f aussi (BUG)
 			continue
 			;;
+		
 		*)
 			if [[ -v aLire ]]
 			then
@@ -199,4 +215,5 @@ then
 fi
 
 echo -e "\nGDDD a été configuré avec succès."
-echo -e "Démarrer le docker et naviguez à la bonne adresse pour vérifier.\n"
+echo -e "Démarrer le docker et naviguez au port $PORT de l'ip de cette machine pour vérifier."
+echo -e "N'oubliez pas de vous connecter en tant qu'admin pour installer le CTF sur les machines distantes.\n"

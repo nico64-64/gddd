@@ -62,7 +62,7 @@
 				echo "Défis barrés globalement (occurences de all.lock):\n";
 				foreach ($_SESSION['defis'] as $defi)
 				{
-					if (file_exists(getenv("RACINE_SERVEUR", "..") . "/lockfiles/" . basename($defi['path']) . ".all.lock"))
+					if (file_exists(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($defi['path']) . ".all.lock"))
 					{echo $defi['titre'] . "\n";}
 				}
 			?></pre>
@@ -70,14 +70,14 @@
 		
 		<h2>equipes.json</h2>
 		<details>
-			<pre><?php echo file_get_contents(getenv("RACINE_SERVEUR","..")."/equipes.json"); ?></pre>
+			<pre><?php echo file_get_contents(getenv("RACINE_SERVEUR")."/equipes.json"); ?></pre>
 		</details>
 		
 		<h2>defis.json</h2>
 		<details>
 			<pre><?php
-				if (file_exists(getenv("RACINE_SERVEUR","..")."/defis/deploiement/defis.json"))
-				{echo file_get_contents(getenv("RACINE_SERVEUR","..")."/defis/deploiement/defis.json");}
+				if (file_exists(getenv("RACINE_SERVEUR")."/defis/deploiement/defis.json"))
+				{echo file_get_contents(getenv("RACINE_SERVEUR")."/defis/deploiement/defis.json");}
 				else
 				{echo "descriptions.yaml seulement";}
 			?></pre>
@@ -92,7 +92,7 @@
 	</page>
 	
 	<footer>
-		<p><strong>GDDD vD0.4</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
+		<p><strong>GDDD vD0.5</strong>&nbsp;&nbsp;(<a href=https://github.com/nico64-64/gddd/tree/version-D#readme>code source</a>)</p>
 	</footer>
 </body>
 </html>
