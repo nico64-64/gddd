@@ -7,7 +7,7 @@ docker run --rm --name gddd -d -p "${PORT}:80" \
     -v /var/run/docker.sock:/var/run/docker.sock `# Permettre le déploiement de défis docker en local` \
     -v "${cwd}/.env:/var/www/.env" \
     -v "${cwd}/entrypoint.sh:/entrypoint.sh" \
-    -v "${cwd}/configVM.sh:/root/configVM.sh" \
+    -v "${cwd}/configVM.sh:${RACINE_SERVEUR}/configVM.sh" \
     -v "${cwd}/configDefis.sh:${RACINE_SERVEUR}/configDefis.sh" \
     -v "${cwd}/gererDefis.sh:${RACINE_SERVEUR}/gererDefis.sh" \
     -v "${cwd}/web:/var/www/web" \
