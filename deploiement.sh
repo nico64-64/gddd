@@ -13,7 +13,6 @@ docker run --rm --name gddd -d -p "${PORT}:80" \
     -v "${cwd}/web:/var/www/web" \
     -v "${cwd}/${DOSSIER_DEFIS}:${RACINE_SERVEUR}/defis" \
     -v "${cwd}/${FICHIER_EQUIPES}:${RACINE_SERVEUR}/equipes.json" \
-    -v "${cwd}/${FICHIER_MACHINES}:${RACINE_SERVEUR}/machines.json" \
     -v "${cwd}/lockfiles/:${RACINE_SERVEUR}/lockfiles/" \
     -v "${cwd}/${ICONE}:${RACINE_SERVEUR}/web/$(basename "${ICONE}")" \
     -v "${cwd}/${LOGO}:${RACINE_SERVEUR}/web/$(basename "${LOGO}")" \

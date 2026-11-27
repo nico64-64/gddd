@@ -10,7 +10,7 @@ for arg in "$@"; do
 	in
 		--help | -h)
 			echo -e "Utilitaire de configuration de GDDD (version D).\n"
-			echo -e "Utilisez comme suit:\n./config.sh [ -h | -v ] [ -c ] [ -f .env ] [ -P port ] [ -P minimum ] [ -d defis/ ] [ -e equipes.json -m machines.json ] [ -r /racine ] [ -M 1 ] [ -n nom -L ctfd.ctf ] [ -i icone.svg -l logo.png ]\n"
+			echo -e "Utilisez comme suit:\n./config.sh [ -h | -v ] [ -c ] [ -f .env ] [ -P port ] [ -P minimum ] [ -d defis/ ] [ -e equipes.json ] [ -r /racine ] [ -M 1 ] [ -n nom -L ctfd.ctf ] [ -i icone.svg -l logo.png ]\n"
 			echo    "-h Affiche ce message d'aide, puis quitte sans rien faire"
 			echo    "-v Affiche le numéro de version de ce script, puis quitte sans rien faire"
 			echo    "-c Copie les fichiers nécessaires au lieu de créer des symlinks"
@@ -20,7 +20,6 @@ for arg in "$@"; do
 			echo    "-i Indique que le prochain argument sera l'icone du CTF (petite image carée)"
 			echo    "-l Indique que le prochain argument sera le logo du CTF (image rectangulaire en format paysage)"
 			echo    "-L Indique que le prochain argument sera le lien vers l'instance de CTFd de l'évènement"
-			echo	"-m Indique que le prochain argument sera le fichier JSON où sont enregistrées les machines où devront être déployés les défis"
 			echo	"-M Indique que le prochain argument sera le nombre maximal d'instances de défi exécutées simultanément par équipe, tous défis confondus"
 			echo    "-n Indique que le prochain argument sera le nom du CTF (entre guillemets s'il contient des espaces)"
 			echo 	"-p Indique que le prochain argument sera le numéro de port utilisé pour déployer GDDD"
@@ -34,8 +33,8 @@ for arg in "$@"; do
 			;;
 		
 		--version | -v)
-			echo "config.sh version 1.2"
-			echo "Compatible avec GDDD version D (0.2 et plus récent)"
+			echo "config.sh version 1.4"
+			echo "Généralement compatible avec GDDD version D (0.2 et plus récent)"
 			exit
 			;;
 		
@@ -92,10 +91,6 @@ do
 		
 		-L)
 			aLire=LIEN_CTFD
-			;;
-		
-		-m)
-			aLire=FICHIER_MACHINES
 			;;
 		
 		-M)
@@ -169,15 +164,6 @@ if ! [ $? -eq 0 ]
 then
 	echo "ERREUR: $FICHIER_EQUIPES n'est pas un fichier JSON valide."
 	echo "Veuillez fournir un fichier JSON valide contenant notamment la liste de toutes les équipes participant au CTF."
-	echo "Consultez $0 -h pour en savoir plus."
-	exit
-fi
-
-jq . "$FICHIER_MACHINES" &> /dev/null
-if ! [ $? -eq 0 ]
-then
-	echo "ERREUR: $FICHIER_MACHINES n'est pas un fichier JSON valide."
-	echo "Veuillez fournir un fichier JSON valide contenant notamment les informations de toutes les machines où seront déployés les défis dynamiques."
 	echo "Consultez $0 -h pour en savoir plus."
 	exit
 fi

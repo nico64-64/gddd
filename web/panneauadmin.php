@@ -27,7 +27,6 @@
 	}
 	
 	$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR")."/equipes.json"), true)['equipes_ctfd'];
-	$machines = json_decode(file_get_contents(getenv("RACINE_SERVEUR") . "/machines.json"), true)['defis-dynamiques'];
 ?>
 
 <!DOCTYPE html>
