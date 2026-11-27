@@ -40,8 +40,7 @@
 	}
 	
 	//Lecture du fichier de configuration des machines:
-	$machines = json_decode(file_get_contents(getenv("RACINE_SERVEUR", "..") . "/equipes.json"), true)['equipes'];
-
+	$equipes = json_decode(file_get_contents(getenv("RACINE_SERVEUR") . "/equipes.json"), true)['equipes_ctfd'];
 	
 	//Configuration SSE:
 	header('Content-Type: text/event-stream');
@@ -79,11 +78,8 @@
 			$_SESSION['defis'][$_GET['defi']]['port'] = getenv("PORT_MINIMUM") + $_SESSION['num_equipe'] * 1000 + rand(1, 999);
 			session_write_close(); //On ne peut plus ÉCRIRE dans $_SESSION après ça, mais ça m'assure que le port y est bien ajouté
 			repondre('Démarrage...', 100); //seul le statut est utilisé
-			usr=$machines[$_SESSION['num_equipe']]['machine']['usr'];
-			ip=$machine[$_SESSION['num_equipe']]['machine']['ip'];
-			mdp=$machine[$_SESSION['num_equipe']]['machine']['mdp'];
-			shell_exec("ssh ".$usr."@".$ip." echo '".$mdp."' | sudo -sS bash -c \"export NOM='".$_SESSION['equipe']."'; export DEFI='".basename($_SESSION['defis'][$_GET['defi']]['path'])."'; export PORT=".$_SESSION['defis'][$_GET['defi']]['port']."; /home/".$_SESSION['equipe']."/gererDefi.sh -d &> /home/".$_SESSION['equipe']."/gererDefi.log\"");
-			error_log("Service en ligne au port " . $_SESSION['defis'][$_GET['defi']]['port'] . " de l'adresse " . $machines[$_SESSION['num_equipe']]['ip']);
+			shell_exec("ssh root@" . $equipes[$_SESSION['num_equipe']]['machine']['ip'] . " NOM='$_SESSION[equipe]' DEFI='" . basename($_SESSION['defis'][$_GET['defi']]['path']) . "' PORT=" . $_SESSION['defis'][$_GET['defi']]['port'] . " \"/home/$_SESSION[equipe]/gererDefi.sh -d &> /home/$_SESSION[equipe]/gererDefi.log\"");
+			error_log("Service en ligne au port " . $_SESSION['defis'][$_GET['defi']]['port'] . " de l'adresse " . $equipes[$_SESSION['num_equipe']]['machine']['ip']);
 			sleep(1); //Laisse un peu de temps pour être sûr que tout est bien parti
 			repondre('Terminé!', 204); //seul le statut est utilisé
 		}
@@ -98,9 +94,9 @@
 		}
 		
 		repondre('Supression...', 100); //seul le statut est utilisé
-		usr=$machines[$_SESSION['num_equipe']]['machine']['usr'];
+		/*usr=$machines[$_SESSION['num_equipe']]['machine']['usr'];
 		ip=$machine[$_SESSION['num_equipe']]['machine']['ip'];
-		mdp=$machine[$_SESSION['num_equipe']]['machine']['mdp'];
+		mdp=$machine[$_SESSION['num_equipe']]['machine']['mdp'];*/
 		shell_exec("ssh ".$usr."@".$ip." echo '".$mdp."' | sudo -sS bash -c \"export NOM='".$_SESSION['equipe']."'; export DEFI='".basename($_SESSION['defis'][$_GET['defi']]['path'])."'; export PORT=".$_SESSION['defis'][$_GET['defi']]['port']."; /home/".$_SESSION['equipe']."/gererDefi.sh -a &> /home/".$_SESSION['equipe']."/gererDefi.log\"");
 		sleep(1); //Laisse un peu de temps pour être sûr que tout est bien fermé
 		unlink(getenv("RACINE_SERVEUR") . "/lockfiles/" . basename($_SESSION['defis'][$_GET['defi']]['path']) . ".$_SESSION[num_equipe].lock");
